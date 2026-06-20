@@ -384,9 +384,6 @@ class Game:
         self.last_player_biome = None
         self.last_player_ended = self.game_world.player.ended
 
-        # 월드 초기 렌더/업데이트 호출
-        self.game_world.update(0, pygame.key.get_pressed(), pygame.event.get())
-
         # HP 바 초기화 (비율에 따라 스케일)
         self.hp_bar_surface = pygame.transform.scale(
             assets.Image.hp_bar,
