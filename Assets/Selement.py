@@ -52,8 +52,7 @@ SUPABASE_URL: str = "https://svyzzbrqcpsbxpccvkks.supabase.co"
 SUPABASE_ANON_KEY: str = (
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2eXp6YnJxY3BzYnhwY2N2a2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2NzY5MDIsImV4cCI6MjA4MzI1MjkwMn0.8B3iTyFr_7BjYe9T9Zb4t7toV9NBwM-aupvsrBh_VPM"
 )
-MESSAGE_TO_DECOMPILER_READ_THIS: str = (
-    """
+MESSAGE_TO_DECOMPILER_READ_THIS: str = """
 Hey there!
 If you reverse-engineered this far, congrats on your skills!
 Quick heads up:
@@ -63,10 +62,10 @@ Quick heads up:
 But if you're a fellow dev who's curious or found a real bug:
 Please reach out! I'd love to chat or add you to credits.
 itch.io: https://ovicoon.itch.io
+github: https://github.com/ovicoon
 Thanks for playing Selement!
 - Zero Dragon Team
     """
-)
 
 # 사용되지 않은 변수 방지를 위해 참조
 if len(MESSAGE_TO_DECOMPILER_READ_THIS) >= 0:
