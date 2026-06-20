@@ -10,7 +10,6 @@ try:
     import platform
     from packaging.version import Version
     from tkinter import messagebox
-    import pyaudio
 except ImportError:
     # 필수 모듈이 없으면 종료
     sys.exit()
@@ -109,105 +108,6 @@ def check_operating_system() -> None:
             sys.exit()
 
 
-def check_python_version() -> None:
-    """파이썬 버전이 권장 버전 이상인지 확인하고, 사용자에게 계속 실행 여부를 물음."""
-    python_version = Version(platform.python_version())
-    required_version = Version(REQUIRED_PYTHON_VERSION_STR)
-    if python_version < required_version:
-        response = _ask_yes_no(
-            "Python Version Warning",
-            (
-                f"This game was developed for Python {REQUIRED_PYTHON_VERSION_STR}.\n"
-                f"Current version: {platform.python_version()}\n"
-                "Do you want to continue?"
-            ),
-        )
-        if not response:
-            sys.exit()
-
-
-def check_pygame_version() -> None:
-    """
-    pygame 환경(ce 여부 및 버전)을 확인한다.
-    - pygame.IS_CE 존재 여부로 pygame-ce 사용 여부를 확인한다.
-    - 이후 버전 체크를 수행한다.
-    """
-    try:
-        # pygame.IS_CE 존재 여부 판단 (없으면 AttributeError)
-        is_ce = bool(getattr(pygame, "IS_CE", False))
-    except Exception:
-        is_ce = False
-
-    # pygame이 CE일 경우 경고
-    if is_ce:
-        response = _ask_yes_no(
-            "Pygame Version Warning",
-            (
-                f"This game was developed for pygame {REQUIRED_PYGAME_VERSION_STR}.\n"
-                "You are using pygame-ce.\n"
-                "Do you want to continue?"
-            ),
-        )
-        if not response:
-            sys.exit()
-        return
-
-    # pygame 이고 버전이 낮은 경우 경고
-    try:
-        pygame_version = Version(pygame.version.ver)
-    except Exception:
-        # 버전을 정확히 읽지 못하면 경고하고 종료 여부 묻기
-        response = _ask_yes_no(
-            "Pygame Version Warning",
-            "Could not determine pygame version.\nDo you want to continue?",
-        )
-        if not response:
-            sys.exit()
-        return
-
-    required = Version(REQUIRED_PYGAME_VERSION_STR)
-    if pygame_version < required:
-        response = _ask_yes_no(
-            "Pygame Version Warning",
-            (
-                f"This game was developed for pygame {REQUIRED_PYGAME_VERSION_STR}.\n"
-                f"Current version: pygame {pygame_version}\n"
-                "Do you want to continue?"
-            ),
-        )
-        if not response:
-            sys.exit()
-
-
-def check_audio() -> None:
-    """오디오 출력장치가 있는지 확인하고, 사용자에게 계속 실행 여부를 물음."""
-    try:
-        p = pyaudio.PyAudio()
-        device_count = p.get_device_count()
-        has_output_device = any(
-            p.get_device_info_by_index(i).get("maxOutputChannels", 0) > 0
-            for i in range(device_count)
-        )
-        p.terminate()
-    except Exception:
-        has_output_device = False
-
-    if not has_output_device:
-        response = _ask_yes_no(
-            "Audio Warning",
-            (
-                "No audio output device found.\n"
-                "Sound may not play.\n"
-                "Do you want to continue?"
-            ),
-        )
-        if not response:
-            sys.exit()
-
-
 def run_checks() -> None:
-    """모든 환경 검사를 실행합니다."""
+    """환경 검사를 실행합니다."""
     check_operating_system()
-    check_python_version()
-    check_pygame_version()
-    check_audio()
