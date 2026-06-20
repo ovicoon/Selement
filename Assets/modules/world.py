@@ -42,7 +42,7 @@ OFFSET_MAX: int = 8192
 BIOME_SIZE: int = 8192
 
 MOB_SPAWN_MAX: int = 15
-MOB_SPAWN_DISTANCE: Tuple[int, int] = (3000, 10000)  # (최소, 최대)
+MOB_SPAWN_DISTANCE: Tuple[int, int] = (3000, 5000)  # (최소, 최대)
 MOB_DESPAWN_DISTANCE: int = 20000
 
 WORLD_SIZE: int = 1_000_000_000

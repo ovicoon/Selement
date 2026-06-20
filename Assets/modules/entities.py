@@ -338,6 +338,7 @@ class Burster(Mob):
             1,
             2,
             attack_animation=utility.Animation(assets.Image.burster_attack_frames, 10),
+            speed_while_attack_multiplier=0.5,
         )
 
     def update(self, world: Any, dt: float) -> None:
