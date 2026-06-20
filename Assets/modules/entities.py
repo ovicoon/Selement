@@ -507,7 +507,7 @@ class BossSelf(Mob):
                 self.speeds = (400, 0, 0)
                 self.attack_recovery = 0.5
             elif self.next_attack == BossSelfState.summon_minions:
-                self.attack_distance = 10000
+                self.attack_distance = float("inf")
                 self.speeds = (400, 0, 0)
                 self.attack_recovery = 8
 
