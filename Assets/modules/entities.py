@@ -571,7 +571,7 @@ class BossSelf(Mob):
             )
         else:
             world.shooter.shoot(
-                self.x, self.y, (0, 1000), 1, 2, assets.Image.light, 5000
+                self.x, self.y, (0, 1000), 1, 2, assets.Image.light, 500
             )
 
 
