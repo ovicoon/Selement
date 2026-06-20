@@ -401,7 +401,7 @@ class Flutterer(Mob):
             attack_animation=utility.Animation(
                 assets.Image.flutterer_attack_frames, 10
             ),
-            move_while_attack_multiplier=1.0,
+            speed_while_attack_multiplier=1.0,
         )
 
     def update(self, world: Any, dt: float) -> None:
