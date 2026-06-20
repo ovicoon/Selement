@@ -89,7 +89,7 @@ class Mob(Entity):
         attack_startup: float,
         attack_recovery: float,
         attack_animation: Any = None,
-        move_while_attack: bool = False,
+        speed_while_attack_multiplier: float = 0,
     ) -> None:
         super().__init__(x, y, image, name)
 
@@ -117,7 +117,7 @@ class Mob(Entity):
         self.attack_startup: float = attack_startup
         self.attack_recovery: float = attack_recovery
         self.attack_animation: Any = attack_animation
-        self.move_while_attack: bool = move_while_attack
+        self.speed_while_attack_multiplier: float = speed_while_attack_multiplier
 
         # 내부 타이머들
         self.attack_startup_timer: utility.TimeKeeper = utility.TimeKeeper(duration=0)
@@ -214,7 +214,7 @@ class Mob(Entity):
                 else:
                     self.state = MobState.idle
 
-            # ---------- 바이옴 기반 속도 결정 ----------
+            # ---------- 바이옴/거리 기반 속도 결정 ----------
             mob_biome: biome.Biome = biome.get_biome(world, self.x, self.y)
             if mob_biome == biome.Biome.water:
                 self.speed = self.speeds[1]
@@ -223,11 +223,17 @@ class Mob(Entity):
             else:
                 self.speed = self.speeds[0]
 
+            if self.state in (
+                MobState.attack_startup,
+                MobState.attack_execute,
+                MobState.attack_recovery,
+                MobState.attack_again,
+            ):
+                self.speed *= self.speed_while_attack_multiplier
+
             # ---------- 이동 처리 ----------
             move: bool = False
-            if self.state == MobState.chase and not self.move_while_attack:
-                move = True
-            elif self.move_while_attack and self.detect_player:
+            if self.detect_player:
                 move = True
 
             if move:
@@ -395,7 +401,7 @@ class Flutterer(Mob):
             attack_animation=utility.Animation(
                 assets.Image.flutterer_attack_frames, 10
             ),
-            move_while_attack=True,
+            move_while_attack_multiplier=1.0,
         )
 
     def update(self, world: Any, dt: float) -> None:
