@@ -13,7 +13,6 @@ import math
 from enum import Enum
 from typing import Any, Optional, Tuple, List
 
-
 # 파일 직접 실행 방지
 if __name__ == "__main__":
     messagebox.showwarning(
@@ -123,11 +122,11 @@ class Collider:
         if data != self.data:
             self.data = data
 
-        if self.type == ColliderType.circle_collider:
-            # 반지름 기반이면 surface 재생성
-            self.surface = pygame.transform.scale(
-                assets.Image.circle, (self.data * 2, self.data * 2)
-            )
+            if self.type == ColliderType.circle_collider:
+                # 반지름 기반이면 surface 재생성
+                self.surface = pygame.transform.scale(
+                    assets.Image.circle, (self.data * 2, self.data * 2)
+                )
 
         # 마스크/rect 갱신
         self.mask = pygame.mask.from_surface(self.surface)
