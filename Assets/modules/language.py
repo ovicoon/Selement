@@ -167,7 +167,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
         TextKey.DEVELOPED_BY: ["크레딧"],
         TextKey.CREDIT: ["제작: 오승훈\n감사합니다."],
         TextKey.KEY_CONTROLS: [
-            "이동: W,A,S,D\n원소 충전: F\n일반공격: 좌클릭\n특수공격: 우클릭\n스킬 변경: 마우스 휠 스크롤\n대사 넘기기: 엔터 키\n디버그: F12 키"
+            "이동: W,A,S,D\n원소 충전: F\n일반공격: 좌클릭\n특수공격: 우클릭\n스킬 변경: 마우스 휠 스크롤, 숫자 키\n대사 넘기기: 엔터 키\n디버그: F12 키"
         ],
         TextKey.ESC_TO_EXIT: ["esc 키를 눌러서 복귀"],
         TextKey.DEBUG_INFO: [
@@ -290,7 +290,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
         TextKey.DEVELOPED_BY: ["credit"],
         TextKey.CREDIT: ["Created by: Brayden Seung-hoon Oh\nThank you."],
         TextKey.KEY_CONTROLS: [
-            "Move: W,A,S,D\nElement Charge: F\nNormal Attack: Left Click\nSpecial Attack: Right Click\nSkill Change: Mouse Wheel Scroll\nSkip Dialogue: Enter Key\nDebug: F12 Key"
+            "Move: W,A,S,D\nElement Charge: F\nNormal Attack: Left Click\nSpecial Attack: Right Click\nSkill Change: Mouse Wheel Scroll, Number Keys\nSkip Dialogue: Enter Key\nDebug: F12 Key"
         ],
         TextKey.ESC_TO_EXIT: ["Press esc to return"],
         TextKey.DEBUG_INFO: [
