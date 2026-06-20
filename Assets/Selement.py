@@ -37,7 +37,7 @@ from modules import (
 # 상수 정의 (개발/게임 환경)
 # ==========================
 DEVELOP_MODE: bool = True
-VERSION: str = "1.3.0"
+VERSION: str = "1.3.0" if not DEVELOP_MODE else "dev"
 LANGUAGE: language.Language = language.Language.KOREAN
 
 INTRO_SCENE_DURATION: float = 0.5 if DEVELOP_MODE else 2.0  # 인트로 씬 지속 시간
