@@ -335,8 +335,6 @@ class World:
 
     def _spawn_mob(self) -> None:
         """플레이어 주변에 몹 스폰, 멀어진 몹 정리."""
-        random.seed()
-
         # 멀어진 몹 제거
         far: List[entities.Entity] = []
         for m in self.mob:
