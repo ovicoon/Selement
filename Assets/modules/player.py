@@ -357,6 +357,7 @@ class Player:
         마우스 휠 이벤트로 공격 타입 선택
         - selement(셀레먼트)가 0이면 0..3(4종류)로 순환
         - selement > 0이면 0..4(5종류)로 순환
+        - 숫자 키(1-5)로도 직접 선택 가능
         """
         for event in pygame_event:
             if event.type == pygame.MOUSEBUTTONDOWN:
