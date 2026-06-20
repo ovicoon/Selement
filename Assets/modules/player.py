@@ -364,6 +364,17 @@ class Player:
                     self.selected_attack_code -= 1
                 elif event.button == 5:
                     self.selected_attack_code += 1
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    self.selected_attack_code = 1
+                elif event.key == pygame.K_2:
+                    self.selected_attack_code = 2
+                elif event.key == pygame.K_3:
+                    self.selected_attack_code = 3
+                elif event.key == pygame.K_4:
+                    self.selected_attack_code = 4
+                elif event.key == pygame.K_5:
+                    self.selected_attack_code = 5
 
         modulo = 5 if self.selement > 0 else 4
         if modulo <= 0:
