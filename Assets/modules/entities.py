@@ -507,9 +507,17 @@ class BossSelf(Mob):
                 self.speeds = (400, 0, 0)
                 self.attack_recovery = 0.5
             elif self.next_attack == BossSelfState.summon_minions:
-                self.attack_distance = float("inf")
-                self.speeds = (400, 0, 0)
-                self.attack_recovery = 8
+                if len(world.mob) == 1:  # 보스만 남아있을 때만 소환
+                    self.attack_distance = float("inf")
+                    self.speeds = (400, 0, 0)
+                    self.attack_recovery = 8
+                else:
+                    self.next_attack = random.choice(
+                        [
+                            BossSelfState.projectile,
+                            BossSelfState.wave,
+                        ]
+                    )
 
             super().update(world, dt)
 
