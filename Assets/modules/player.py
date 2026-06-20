@@ -424,7 +424,7 @@ class Player:
                 20,
             )
             assets.Sound.skill_use.play()
-        elif self.selected_attack == attack_type.air and self.air >= 1:
+        elif self.selected_attack == attack_type.air and self.air >= 5:
             self.air -= 5
             self.speed_up_timer = utility.TimeKeeper(duration=SPEED_UP_DURATION)
             assets.Sound.skill_use.play()
