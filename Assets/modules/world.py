@@ -2,6 +2,7 @@
 """
 월드(월드/룸) 생성·업데이트·렌더링을 담당하는 모듈.
 """
+
 from __future__ import annotations
 
 import math
@@ -352,7 +353,7 @@ class World:
             return
 
         # 스폰
-        if random.random() > 0:
+        if random.random() > 0.5:
             dist = random.uniform(*MOB_SPAWN_DISTANCE)
             angle = random.uniform(0.0, 360.0)
             pos = pygame.math.Vector2(
