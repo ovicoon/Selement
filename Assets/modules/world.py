@@ -41,7 +41,7 @@ GAME_TICK_INTERVAL: float = 0.1
 OFFSET_MAX: int = 8192
 BIOME_SIZE: int = 8192
 
-MOB_SPAWN_MAX: int = 15
+MOB_SPAWN_MAX: int = 10
 MOB_SPAWN_DISTANCE: Tuple[int, int] = (3000, 5000)  # (최소, 최대)
 MOB_DESPAWN_DISTANCE: int = 6000
 
