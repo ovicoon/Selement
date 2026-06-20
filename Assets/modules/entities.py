@@ -220,6 +220,8 @@ class Mob(Entity):
                 self.speed = self.speeds[1]
             elif mob_biome == biome.Biome.air:
                 self.speed = self.speeds[2]
+            elif mob_biome == biome.Biome.fifth_biome:
+                self.speed = max(self.speeds)
             else:
                 self.speed = self.speeds[0]
 
