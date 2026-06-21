@@ -635,6 +635,7 @@ class Game:
             for mob in self.game_world.mob:
                 if type(mob) == entities.BossSelf:
                     self.boss_alive = mob.alive
+                    self.boss_coord = (mob.x, mob.y)
 
             if not self.boss_alive:
                 for mob in self.game_world.mob:
@@ -717,7 +718,11 @@ class Game:
                 if self.current_line.name == "after boss":
                     self.game_world.static_objects.append(
                         entities.InteractableEntity(
-                            0, 0, assets.Image.selement, "selement", 32
+                            self.boss_coord[0],
+                            self.boss_coord[1],
+                            assets.Image.selement,
+                            "selement",
+                            32,
                         )
                     )
 
