@@ -429,6 +429,7 @@ class Plower(Mob):
             0.5,
             1,
             attack_animation=utility.Animation(assets.Image.plower_attack_frames, 10),
+            speed_while_attack_multiplier=0.3,
         )
 
     def update(self, world: Any, dt: float) -> None:
@@ -506,6 +507,7 @@ class BossSelf(Mob):
                 self.attack_distance = 1000
                 self.speeds = (400, 0, 0)
                 self.attack_recovery = 0.5
+                self.speed_while_attack_multiplier = 0.5
             elif self.next_attack == BossSelfState.summon_minions:
                 if len(world.mob) == 1:  # 보스만 남아있을 때만 소환
                     self.attack_distance = float("inf")
