@@ -506,31 +506,31 @@ class Game:
         if sel == player.attack_type.fire:
             self.play_scene.ui.append(
                 utility.OverLaySurface(
-                    1600, 540, assets.Image.attack_select, center_pivot=False
+                    1600, 412, assets.Image.attack_select, center_pivot=False
                 )
             )
         elif sel == player.attack_type.water:
             self.play_scene.ui.append(
                 utility.OverLaySurface(
-                    1600, 668, assets.Image.attack_select, center_pivot=False
+                    1600, 540, assets.Image.attack_select, center_pivot=False
                 )
             )
         elif sel == player.attack_type.dirt:
             self.play_scene.ui.append(
                 utility.OverLaySurface(
-                    1600, 796, assets.Image.attack_select, center_pivot=False
+                    1600, 668, assets.Image.attack_select, center_pivot=False
                 )
             )
         elif sel == player.attack_type.air:
             self.play_scene.ui.append(
                 utility.OverLaySurface(
-                    1600, 924, assets.Image.attack_select, center_pivot=False
+                    1600, 796, assets.Image.attack_select, center_pivot=False
                 )
             )
         elif sel == player.attack_type.selement:
             self.play_scene.ui.append(
                 utility.OverLaySurface(
-                    1600, 412, assets.Image.attack_select, center_pivot=False
+                    1600, 924, assets.Image.attack_select, center_pivot=False
                 )
             )
 
