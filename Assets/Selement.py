@@ -459,34 +459,34 @@ class Game:
         # 원소들 렌더링(아이콘 위치와 텍스트 위치를 헬퍼로 추가)
         self._append_element_ui(
             1600,
-            540,
+            412,
             assets.Image.fire_icon,
             1750,
-            640,
+            512,
             f"{self.game_world.player.fire}",
         )
         self._append_element_ui(
             1600,
-            668,
+            540,
             assets.Image.water_icon,
             1750,
-            768,
+            640,
             f"{self.game_world.player.water}",
         )
         self._append_element_ui(
             1600,
-            796,
+            668,
             assets.Image.dirt_icon,
             1750,
-            896,
+            768,
             f"{self.game_world.player.dirt}",
         )
         self._append_element_ui(
             1600,
-            924,
+            796,
             assets.Image.air_icon,
             1750,
-            1024,
+            896,
             f"{self.game_world.player.air}",
         )
 
@@ -494,10 +494,10 @@ class Game:
         if self.game_world.player.selement > 0:
             self._append_element_ui(
                 1600,
-                412,
+                924,
                 assets.Image.selement_icon,
                 1750,
-                512,
+                1024,
                 f"{self.game_world.player.selement}",
             )
 
