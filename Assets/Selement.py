@@ -20,7 +20,7 @@ import psutil
 import pygame
 from tkinter import messagebox
 
-from supabase import create_client, Client
+import requests
 
 from modules import (
     utility,
@@ -47,18 +47,15 @@ FPS_LIMIT: int = 60  # 초당 최대 프레임
 HP_BAR_MAX_LENGTH: int = 512
 HP_BAR_HEIGHT: int = 128
 
-# supabase 설정
-SUPABASE_URL: str = "https://svyzzbrqcpsbxpccvkks.supabase.co"
-SUPABASE_ANON_KEY: str = (
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2eXp6YnJxY3BzYnhwY2N2a2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2NzY5MDIsImV4cCI6MjA4MzI1MjkwMn0.8B3iTyFr_7BjYe9T9Zb4t7toV9NBwM-aupvsrBh_VPM"
-)
+# worker 설정
+WORKER_URL = "https://dragonheart.zerodragon.workers.dev"
 MESSAGE_TO_DECOMPILER_READ_THIS: str = """
 Hey there!
 If you reverse-engineered this far, congrats on your skills!
 Quick heads up:
-- This DB only has anonymous game statistics (play_time, endings, etc.)
-- RLS is enabled: You can INSERT and SELECT but not UPDATE/DELETE
-- Your 3+ hours of work vs my 5-minute DELETE query = not worth it
+- This API only accepts anonymous game statistics (play_time, endings, etc.) via POST
+- Direct DB access is protected: You cannot UPDATE, DELETE, or manipulate other users' data
+- Your 3+ hours of work vs my 5-minute database rollback = not worth it
 But if you're a fellow dev who's curious or found a real bug:
 Please reach out! I'd love to chat or add you to credits.
 itch.io: https://ovicoon.itch.io
@@ -67,9 +64,8 @@ Thanks for playing Selement!
 - Zero Dragon Team
     """
 
-# 사용되지 않은 변수 방지를 위해 참조
-if len(MESSAGE_TO_DECOMPILER_READ_THIS) >= 0:
-    pass
+# 사용되지 않은 변수 방지를 위해 출력
+print(MESSAGE_TO_DECOMPILER_READ_THIS)
 
 
 class Game:
@@ -861,15 +857,13 @@ if __name__ == "__main__":
                     "Share Play Session Data",
                     "Help us improve Selement!\n\n"
                     "Share your play session data?\n"
+                    "• Version information\n"
                     "• Play time and ending information\n"
-                    "• Stored in Supabase\n"
-                    "• May be accessed by third parties(anyone who has anon key)\n\n"
+                    "• Stored securely via Cloudflare Worker\n"
+                    "• Used only for anonymous gameplay statistics\n\n"
                     "You can refuse - this is optional.",
                 ):
                     try:
-                        supabase: Client = create_client(
-                            SUPABASE_URL, SUPABASE_ANON_KEY
-                        )
                         play_time: int = int(time.time() - start_time)
                         data = {
                             "play_time": play_time,
@@ -878,11 +872,12 @@ if __name__ == "__main__":
                             "easter_egg_ending": game.game_world.player.easter_egg_ending,
                             "version": VERSION,
                         }
-                        response = (
-                            supabase.table("play_sessions").insert(data).execute()
+                        # Worker의 플레이 세션 엔드포인트로 POST 요청 전송
+                        response = requests.post(
+                            f"{WORKER_URL}/api/sessions", json=data, timeout=5
                         )
                     except Exception:
-                        print("Supabase 로 데이터 전송 중 오류 발생")
+                        print("데이터 전송 중 오류 발생")
 
         except Exception as e:
             messagebox.showerror(
@@ -894,16 +889,18 @@ if __name__ == "__main__":
                 "Help us improve Selement!\n\n"
                 "Share your error data?\n"
                 "• Error type and game version\n"
-                "• Stored in Supabase\n"
-                "• May be accessed by third parties(anyone who has anon key)\n\n"
+                "• Stored securely via Cloudflare Worker\n"
+                "• Used only for bug fixes and stability improvements\n\n"
                 "You can refuse - this is optional.",
             ):
                 try:
-                    supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
                     data = {
                         "error_type": type(e).__name__,
                         "version": VERSION,
                     }
-                    response = supabase.table("crash_logs").insert(data).execute()
+                    # Worker의 에러 로그 엔드포인트로 POST 요청 전송
+                    response = requests.post(
+                        f"{WORKER_URL}/api/errors", json=data, timeout=5
+                    )
                 except Exception:
-                    print("Supabase 로 데이터 전송 중 오류 발생")
+                    print("데이터 전송 중 오류 발생")
