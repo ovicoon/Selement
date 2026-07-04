@@ -11,7 +11,6 @@ import sys
 from typing import Dict, Iterable, List, Optional, Tuple
 
 import pygame
-from opensimplex import OpenSimplex
 from tkinter import messagebox
 
 # 직접 실행 방지
@@ -88,12 +87,8 @@ class World:
         self.offset3 = random.uniform(1, OFFSET_MAX) * random.choice([-1, 1])
         self.offset4 = random.uniform(1, OFFSET_MAX) * random.choice([-1, 1])
 
-        self.temp_noise_generator = OpenSimplex(
-            seed=random.randint(1, OFFSET_MAX) * random.choice([-1, 1])
-        )
-        self.moist_noise_generator = OpenSimplex(
-            seed=random.randint(1, OFFSET_MAX) * random.choice([-1, 1])
-        )
+        self.temp_seed: int = random.randint(1, OFFSET_MAX)
+        self.moist_seed: int = random.randint(1, OFFSET_MAX)
 
         # 플레이어 스폰
         self.spawn_x = random.randint(-OFFSET_MAX, OFFSET_MAX)
