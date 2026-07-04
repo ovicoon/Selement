@@ -60,6 +60,7 @@ But if you're a fellow dev who's curious or found a real bug:
 Please reach out! I'd love to chat or add you to credits.
 itch.io: https://ovicoon.itch.io
 github: https://github.com/ovicoon
+email: zerodragon.come159@passinbox.com
 Thanks for playing Selement!
 - Zero Dragon Team
     """
