@@ -1,6 +1,6 @@
 # run_check.py
 """
-런체크 모듈 — 게임 실행 전 환경(운영체제, 파이썬, 의존 패키지 등)을 확인합니다.
+런체크 모듈 — 게임 실행 전 환경을 확인합니다.
 """
 
 import sys
@@ -29,47 +29,6 @@ if __name__ == "__main__":
 # -----------------------
 REQUIRED_OS_SYSTEM: str = "Windows"
 REQUIRED_OS_RELEASE: str = "11"
-
-REQUIRED_PYTHON_VERSION_STR: str = "3.13.5"
-REQUIRED_PYGAME_VERSION_STR: str = "2.6.1"
-
-# -----------------------
-# 의존성 임포트 확인
-# -----------------------
-try:
-    import pygame
-    from opensimplex import OpenSimplex
-    import random
-    import math
-    import time
-    from screeninfo import get_monitors
-    import psutil
-    from enum import Enum
-    import hashlib
-    import typing
-    from supabase import create_client, Client
-except ImportError:
-    messagebox.showerror(
-        "Import Error",
-        "Could not import required dependencies.\nPlease ensure all required packages are installed.",
-    )
-    sys.exit()
-
-# -----------------------
-# 게임 내부 모듈 존재 확인
-# -----------------------
-try:
-    from . import entities  # noqa: F401
-    from . import assets  # noqa: F401
-    from . import utility  # noqa: F401
-    from . import biome  # noqa: F401
-    from . import world  # noqa: F401
-    from . import graphic_effect  # noqa: F401
-    from . import language  # noqa: F401
-
-except ImportError:
-    messagebox.showerror("Import Error", "Could not import internal game modules.")
-    sys.exit()
 
 
 # -----------------------
