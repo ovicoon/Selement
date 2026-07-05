@@ -1,33 +1,3 @@
-License
-
-
-
-Code
-The source code of Selement is licensed under the GNU Affero General Public License v3 (AGPLv3).
-
-Assets (Graphics, Sounds, Music)
-All original assets created by the author (including images, sound effects, and other media) are dedicated to the public domain under CC0 1.0 Universal.
-
-Third-party assets are listed separately in the References/Credits section
-and are licensed under their respective licenses.
-
-Third-party assets:
-    font.ttf: OFL (Author: KERIS)
-    bird_singing.wav: CC0
-    button_click.wav: CC0
-    fire_burning.wav: CC0
-    game_over.wav: CC0
-    player_hit.wav: CC0
-    underwater.flac: CC0
-    wind_blowing.wav: CC0
-    kill_mob.wav: CC0
-    earn_selement.ogg: CC0
-    mob_hit.wav: CC0
-    portal_enter.mp3: CC0
-    projectile_shoot.flac: CC0
-    skill.wav: CC0
-
-
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 
