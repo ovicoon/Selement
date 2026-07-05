@@ -1,3 +1,33 @@
+License
+
+
+
+Code
+The source code of Selement is licensed under the GNU Affero General Public License v3 (AGPLv3).
+
+Assets (Graphics, Sounds, Music)
+All original assets created by the author (including images, sound effects, and other media) are released under CC0 1.0 (Public Domain).
+
+Third-party assets are listed separately in the References/Credits section
+and are licensed under their respective licenses.
+
+Third-party assets:
+    font.ttf: OFL (Author: KERIS)
+    bird_singing.wav: CC0
+    button_click.wav: CC0
+    fire_burning.wav: CC0
+    game_over.wav: CC0
+    player_hit.wav: CC0
+    underwater.flac: CC0
+    wind_blowing.wav: CC0
+    kill_mob.wav: CC0
+    earn_selement.ogg: CC0
+    mob_hit.wav: CC0
+    portal_enter.mp3: CC0
+    projectile_shoot.flac: CC0
+    skill.wav: CC0
+
+
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 
@@ -629,8 +659,8 @@ to attach them to the start of each source file to most effectively
 state the exclusion of warranty; and each file should have at least
 the "copyright" line and a pointer to where the full notice is found.
 
-    Selement - A philosophical game about self and elements.
-    Copyright (C) 2025  Brayden Seung-hoon Oh
+    <one line to give the program's name and a brief idea of what it does.>
+    Copyright (C) <year>  <name of author>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published
