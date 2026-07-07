@@ -81,8 +81,8 @@ Thanks for playing Selement!
 - Zero Dragon Team
     """
 
-# 사용되지 않은 변수 방지를 위해 출력
-print(MESSAGE_TO_DECOMPILER_READ_THIS)
+# 사용되지 않은 변수 방지
+_ = MESSAGE_TO_DECOMPILER_READ_THIS
 
 
 class Game:
