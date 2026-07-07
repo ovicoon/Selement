@@ -870,54 +870,35 @@ if __name__ == "__main__":
                 and hasattr(game.game_world, "player")
                 and game.game_world.player is not None
             ):
-                if messagebox.askyesno(
-                    "Share Play Session Data",
-                    "Help us improve Selement!\n\n"
-                    "Share your play session data?\n"
-                    "• Version information\n"
-                    "• Play time and ending information\n"
-                    "• Stored securely via Cloudflare Worker\n"
-                    "• Used only for anonymous gameplay statistics\n\n"
-                    "You can refuse - this is optional.",
-                ):
-                    try:
-                        play_time: int = int(time.time() - start_time)
-                        data = {
-                            "play_time": play_time,
-                            "ending": game.game_world.player.ending,
-                            "ended": game.game_world.player.ended,
-                            "easter_egg_ending": game.game_world.player.easter_egg_ending,
-                            "version": VERSION,
-                        }
-                        # Worker의 플레이 세션 엔드포인트로 POST 요청 전송
-                        response = requests.post(
-                            f"{WORKER_URL}/api/sessions", json=data, timeout=5
-                        )
-                    except Exception:
-                        print("데이터 전송 중 오류 발생")
+                try:
+                    play_time: int = int(time.time() - start_time)
+                    data = {
+                        "play_time": play_time,
+                        "ending": game.game_world.player.ending,
+                        "ended": game.game_world.player.ended,
+                        "easter_egg_ending": game.game_world.player.easter_egg_ending,
+                        "version": VERSION,
+                    }
+                    # Worker의 플레이 세션 엔드포인트로 POST 요청 전송
+                    response = requests.post(
+                        f"{WORKER_URL}/api/sessions", json=data, timeout=5
+                    )
+                except Exception:
+                    print("데이터 전송 중 오류 발생")
 
         except Exception as e:
             messagebox.showerror(
                 f"Error:{type(e).__name__}",
                 f"{e}\nTraceBack:{traceback.format_exc()}\n",
             )
-            if messagebox.askyesno(
-                "Report Error",
-                "Help us improve Selement!\n\n"
-                "Share your error data?\n"
-                "• Error type and game version\n"
-                "• Stored securely via Cloudflare Worker\n"
-                "• Used only for bug fixes and stability improvements\n\n"
-                "You can refuse - this is optional.",
-            ):
-                try:
-                    data = {
-                        "error_type": type(e).__name__,
-                        "version": VERSION,
-                    }
-                    # Worker의 에러 로그 엔드포인트로 POST 요청 전송
-                    response = requests.post(
-                        f"{WORKER_URL}/api/errors", json=data, timeout=5
-                    )
-                except Exception:
-                    print("데이터 전송 중 오류 발생")
+            try:
+                data = {
+                    "error_type": type(e).__name__,
+                    "version": VERSION,
+                }
+                # Worker의 에러 로그 엔드포인트로 POST 요청 전송
+                response = requests.post(
+                    f"{WORKER_URL}/api/errors", json=data, timeout=5
+                )
+            except Exception:
+                print("데이터 전송 중 오류 발생")
