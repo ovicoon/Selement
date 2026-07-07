@@ -82,7 +82,7 @@ Thanks for playing Selement!
     """
 
 # 사용되지 않은 변수 방지
-_ = MESSAGE_TO_DECOMPILER_READ_THIS
+print(MESSAGE_TO_DECOMPILER_READ_THIS)
 
 
 class Game:
