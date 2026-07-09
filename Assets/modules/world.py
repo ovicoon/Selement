@@ -155,6 +155,22 @@ class World:
         cy = math.floor(y / self.chunk_size) * self.chunk_size + self.chunk_size // 2
         return cx, cy
 
+    def get_tile_center(self, x: float, y: float) -> Tuple[int, int]:
+        """월드 좌표를 해당 타일의 중심 좌표로 스냅."""
+        tx = math.floor(x / self.tile_size) * self.tile_size + self.tile_size // 2
+        ty = math.floor(y / self.tile_size) * self.tile_size + self.tile_size // 2
+        return tx, ty
+
+    def get_tile_biome(self, x: float, y: float) -> biome.Biome:
+        """주어진 위치의 타일 바이옴을 반환. 로드된 청크 내에 타일이 존재하면 해당 바이옴을 반환하고, 없으면 biome.get_biome을 호출."""
+        cx, cy = self._to_chunk_center(x, y)
+        if (cx, cy) in self.loaded_chunks:
+            tx, ty = self.get_tile_center(x, y)
+            for tile in self.loaded_chunks[(cx, cy)].tiles:
+                if tile.x == tx and tile.y == ty:
+                    return tile.biome
+        return biome.get_biome(self, x, y)
+
     def _load_chunks_around_player(self) -> None:
         """플레이어 주변의 청크를 로드하고, 멀어진 청크는 언로드."""
         size = _ensure_odd(LOAD_CHUNK_SIZE)
@@ -570,10 +586,10 @@ class Room(World):
         self.shooter = graphic_effect.ParticleShooter()
 
         self.tile_size = TILE_SIZE
-        tiles_x = self.width // self.tile_size
-        tiles_y = self.height // self.tile_size
-        for i in range(-(tiles_x // 2), tiles_x // 2):
-            for j in range(-(tiles_y // 2), tiles_y // 2):
+        self.tiles_x = self.width // self.tile_size
+        self.tiles_y = self.height // self.tile_size
+        for i in range(-(self.tiles_x // 2), self.tiles_x // 2):
+            for j in range(-(self.tiles_y // 2), self.tiles_y // 2):
                 self.background.append(
                     Tile(
                         self.tile_size * i + self.tile_size // 2,
