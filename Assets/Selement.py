@@ -341,19 +341,22 @@ class Game:
         """
         speed: float = round(self.game_world.player.velocity.length() / self.dt, 1)
         try:
-            debug_info = (
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[0]}: {math.floor(self.game_world.player.x)},{math.floor(self.game_world.player.y)}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[1]}: {int(self.clock.get_fps())}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[2]}: {self.game_world.get_tile_biome(self.game_world.player.x, self.game_world.player.y)}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[3]}: {current_chunk}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[4]}: {speed}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[5]}: {len(self.game_world.entities)}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[6]}: {platform.processor()}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[7]}: {int(psutil.cpu_percent())}%\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[8]}: {psutil.virtual_memory().percent}%\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[9]}: {self.game_world.player.defence}%\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[10]}: {self.game_world.player.hp}/{self.game_world.player.max_hp}\n"
-            )
+            if DEVELOP_MODE:
+                debug_info = (
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[0]}: {math.floor(self.game_world.player.x)},{math.floor(self.game_world.player.y)}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[1]}: {int(self.clock.get_fps())}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[2]}: {self.game_world.get_tile_biome(self.game_world.player.x, self.game_world.player.y)}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[3]}: {current_chunk}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[4]}: {speed}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[5]}: {len(self.game_world.entities)}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[6]}: {platform.processor()}\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[7]}: {int(psutil.cpu_percent())}%\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[8]}: {psutil.virtual_memory().percent}%\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[9]}: {self.game_world.player.defence}%\n"
+                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[10]}: {self.game_world.player.hp}/{self.game_world.player.max_hp}\n"
+                )
+            else:
+                debug_info = f"{self.lang.get(language.TextKey.DEBUG_INFO)[1]}: {int(self.clock.get_fps())}\n"
         except Exception:
             debug_info = self.lang.get(language.TextKey.ERR_WHILE_DEBUG)[0]
 
