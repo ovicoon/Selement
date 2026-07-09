@@ -644,3 +644,7 @@ class Room(World):
 
         # 정적 오브젝트
         self.entities.extend(self.static_objects)
+
+    def get_tile_biome(self, x: float, y: float) -> biome.Biome:
+        """Room은 청크가 없으므로 캐싱을 건너뛰고 곧바로 특별 바이옴을 반환합니다."""
+        return biome.fifth_biome
