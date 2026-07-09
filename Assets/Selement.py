@@ -28,11 +28,9 @@ run_check.run_checks()
 import hashlib
 import math
 import time
-import platform
 import traceback
 from typing import Optional
 
-import psutil
 import pygame
 from tkinter import messagebox
 
@@ -52,7 +50,7 @@ from modules import (
 # ==========================
 # 상수 정의 (개발/게임 환경)
 # ==========================
-DEVELOP_MODE: bool = True
+DEVELOP_MODE: bool = False
 VERSION: str = "1.4.0" if not DEVELOP_MODE else "dev"
 LANGUAGE: language.Language = language.Language.KOREAN
 
@@ -348,10 +346,6 @@ class Game:
                     f"{self.lang.get(language.TextKey.DEBUG_INFO)[2]}: {self.game_world.get_tile_biome(self.game_world.player.x, self.game_world.player.y)}\n"
                     f"{self.lang.get(language.TextKey.DEBUG_INFO)[3]}: {current_chunk}\n"
                     f"{self.lang.get(language.TextKey.DEBUG_INFO)[4]}: {speed}\n"
-                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[5]}: {len(self.game_world.entities)}\n"
-                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[6]}: {platform.processor()}\n"
-                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[7]}: {int(psutil.cpu_percent())}%\n"
-                    f"{self.lang.get(language.TextKey.DEBUG_INFO)[8]}: {psutil.virtual_memory().percent}%\n"
                     f"{self.lang.get(language.TextKey.DEBUG_INFO)[9]}: {self.game_world.player.defence}%\n"
                     f"{self.lang.get(language.TextKey.DEBUG_INFO)[10]}: {self.game_world.player.hp}/{self.game_world.player.max_hp}\n"
                 )
