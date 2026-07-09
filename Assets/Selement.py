@@ -344,7 +344,7 @@ class Game:
             debug_info = (
                 f"{self.lang.get(language.TextKey.DEBUG_INFO)[0]}: {math.floor(self.game_world.player.x)},{math.floor(self.game_world.player.y)}\n"
                 f"{self.lang.get(language.TextKey.DEBUG_INFO)[1]}: {int(self.clock.get_fps())}\n"
-                f"{self.lang.get(language.TextKey.DEBUG_INFO)[2]}: {biome.get_biome(self.game_world, self.game_world.player.x, self.game_world.player.y)}\n"
+                f"{self.lang.get(language.TextKey.DEBUG_INFO)[2]}: {self.game_world.get_tile_biome(self.game_world.player.x, self.game_world.player.y)}\n"
                 f"{self.lang.get(language.TextKey.DEBUG_INFO)[3]}: {current_chunk}\n"
                 f"{self.lang.get(language.TextKey.DEBUG_INFO)[4]}: {speed}\n"
                 f"{self.lang.get(language.TextKey.DEBUG_INFO)[5]}: {len(self.game_world.entities)}\n"
@@ -387,8 +387,8 @@ class Game:
 
         # 월드 생성 및 초기 상태 설정
         self.game_world = world.World(numeric_hash)
-        self.player_biome = biome.get_biome(
-            self.game_world, self.game_world.player.x, self.game_world.player.y
+        self.player_biome = self.game_world.get_tile_biome(
+            self.game_world.player.x, self.game_world.player.y
         )
         self.player_element_charge_timer = utility.TimeKeeper(duration=0)
 
@@ -802,8 +802,7 @@ class Game:
                     )
 
                 # 바이옴 갱신
-                self.player_biome = biome.get_biome(
-                    self.game_world,
+                self.player_biome = self.game_world.get_tile_biome(
                     self.game_world.player.x,
                     self.game_world.player.y,
                 )

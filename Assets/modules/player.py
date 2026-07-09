@@ -168,8 +168,7 @@ class Player:
          - 월드 상호작용
         """
         # 현재 바이옴
-        self.player_biome = biome.get_biome(world, self.x, self.y)
-
+        self.player_biome = world.get_tile_biome(self.x, self.y)
         if self.alive:
             # 원소 충전
             self._charge_element(keys)

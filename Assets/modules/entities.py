@@ -231,7 +231,7 @@ class Mob(Entity):
                     self.state = MobState.idle
 
             # ---------- 바이옴/거리 기반 속도 결정 ----------
-            mob_biome: biome.Biome = biome.get_biome(world, self.x, self.y)
+            mob_biome: biome.Biome = world.get_tile_biome(self.x, self.y)
             if mob_biome == biome.Biome.water:
                 self.speed = self.speeds[1]
             elif mob_biome == biome.Biome.air:

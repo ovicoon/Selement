@@ -224,11 +224,11 @@ class World:
         """현재 플레이어 바이옴/수역 상태에 따라 표시 여부를 결정해 버퍼에 추가."""
         if self.player_biome == biome.Biome.water:
             # 수중: 물 속 엔티티만 보이게
-            if biome.get_biome(self, e.x, e.y) == biome.Biome.water:
+            if self.get_tile_biome(e.x, e.y) == biome.Biome.water:
                 self.entities.append(e)
         else:
             # 지상: 물 속 엔티티는 숨김
-            if biome.get_biome(self, e.x, e.y) != biome.Biome.water:
+            if self.get_tile_biome(e.x, e.y) != biome.Biome.water:
                 self.entities.append(e)
 
     def _refresh_entities(self, dt: float) -> None:
@@ -268,7 +268,7 @@ class World:
                         continue
                     if (
                         e.name == "portal"
-                        and biome.get_biome(self, e.x, e.y) == biome.Biome.water
+                        and self.get_tile_biome(e.x, e.y) == biome.Biome.water
                     ):
                         continue
 
@@ -294,7 +294,7 @@ class World:
                         self.entities.append(e)
                     elif (
                         e.name == "portal"
-                        and biome.get_biome(self, e.x, e.y) == biome.Biome.water
+                        and self.get_tile_biome(e.x, e.y) == biome.Biome.water
                     ):
                         self.entities.append(e)
 
@@ -335,7 +335,7 @@ class World:
             self._load_chunks_around_player()
 
         # 현재 플레이어 위치의 바이옴
-        self.player_biome = biome.get_biome(self, self.player.x, self.player.y)
+        self.player_biome = self.get_tile_biome(self.player.x, self.player.y)
 
         # 게임 틱
         if self.game_tick_timer.is_finished():
@@ -386,7 +386,7 @@ class World:
                 self.player.x + (dist * math.cos(math.radians(angle))),
                 self.player.y + (dist * math.sin(math.radians(angle))),
             )
-            b = biome.get_biome(self, pos.x, pos.y)
+            b = self.get_tile_biome(pos.x, pos.y)
             if b == biome.Biome.fire:
                 self.mob.append(entities.Burster(pos.x, pos.y))
             elif b == biome.Biome.water:
@@ -424,7 +424,7 @@ class Chunk:
             for j in range(-half, half):
                 tx = self.x + i * self.world.tile_size + self.world.tile_size // 2
                 ty = self.y + j * self.world.tile_size + self.world.tile_size // 2
-                tb = biome.get_biome(self.world, tx, ty)
+                tb = self.world.get_tile_biome(tx, ty)
 
                 # water 는 애니메이션 프레임이므로 이미지 즉시 할당하지 않음
                 if tb == biome.Biome.dirt:
@@ -456,7 +456,7 @@ class Chunk:
                 oy = self.y + random.randint(
                     -self.world.chunk_size // 2, self.world.chunk_size // 2
                 )
-                ob = biome.get_biome(self.world, ox, oy)
+                ob = self.world.get_tile_biome(ox, oy)
                 if ob == biome.Biome.dirt:
                     grass_img, grass_name = random.choice(
                         [
@@ -479,7 +479,7 @@ class Chunk:
                 oy = self.y + random.randint(
                     -self.world.chunk_size // 2, self.world.chunk_size // 2
                 )
-                ob = biome.get_biome(self.world, ox, oy)
+                ob = self.world.get_tile_biome(ox, oy)
                 if ob == biome.Biome.dirt:
                     tree_img, tree_name = random.choice(
                         [
@@ -499,7 +499,7 @@ class Chunk:
                 oy = self.y + random.randint(
                     -self.world.chunk_size // 2, self.world.chunk_size // 2
                 )
-                ob = biome.get_biome(self.world, ox, oy)
+                ob = self.world.get_tile_biome(ox, oy)
                 if ob == biome.Biome.fire:
                     # 푸른 불꽃은 저확률
                     if random.random() > 0.001:
@@ -516,7 +516,7 @@ class Chunk:
                 oy = self.y + random.randint(
                     -self.world.chunk_size // 2, self.world.chunk_size // 2
                 )
-                ob = biome.get_biome(self.world, ox, oy)
+                ob = self.world.get_tile_biome(ox, oy)
                 if ob == biome.Biome.water:
                     coral_img, coral_name = random.choice(
                         [
@@ -605,7 +605,7 @@ class Room(World):
     def update(self, dt: float, keys, pygame_event) -> None:
         self.entities.clear()
 
-        self.player_biome = biome.get_biome(self, self.player.x, self.player.y)
+        self.player_biome = self.get_tile_biome(self.player.x, self.player.y)
 
         self._render_entities_room(dt)
 
@@ -627,10 +627,10 @@ class Room(World):
             if m.alive:
                 m.update(self, dt)
                 if self.player_biome == biome.Biome.water:
-                    if biome.get_biome(self, m.x, m.y) == biome.Biome.water:
+                    if self.get_tile_biome(m.x, m.y) == biome.Biome.water:
                         self.entities.append(m)
                 else:
-                    if biome.get_biome(self, m.x, m.y) != biome.Biome.water:
+                    if self.get_tile_biome(m.x, m.y) != biome.Biome.water:
                         self.entities.append(m)
             else:
                 dead_mobs.append(m)
