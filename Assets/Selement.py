@@ -50,7 +50,7 @@ from modules import (
 # ==========================
 # 상수 정의 (개발/게임 환경)
 # ==========================
-DEVELOP_MODE: bool = False
+DEVELOP_MODE: bool = True
 VERSION: str = "1.4.0" if not DEVELOP_MODE else "dev"
 LANGUAGE: language.Language = language.Language.KOREAN
 
