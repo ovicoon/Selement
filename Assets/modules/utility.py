@@ -26,6 +26,7 @@ import sys
 import random
 from screeninfo import get_monitors
 import math
+from functools import lru_cache
 from enum import Enum
 from typing import Any, Optional, Tuple, List
 
@@ -492,6 +493,7 @@ class OverLaySurface:
             self.rect.topleft = (x, y)
 
 
+@lru_cache(maxsize=16)
 def str_to_surface(
     text: str,
     font: pygame.freetype.Font,
