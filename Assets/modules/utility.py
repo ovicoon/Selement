@@ -274,6 +274,8 @@ class Camera:
         Screen.game_surface.fill((0, 0, 0))
 
         collider_visuals: List[Collider] = []
+        # 일괄 렌더링을 위한 blit 큐 생성
+        blit_queue: List[Tuple[Any, Tuple[float, float]]] = []
 
         # 엔티티 리스트 처리: 컬링 및 그리기 대상 분류
         for entity in scene.entities:
@@ -319,7 +321,7 @@ class Camera:
                 if entity.collider.type == ColliderType.circle_collider:
                     collider_visuals.append(entity.collider)
 
-        # 배경 타일 렌더링 (컬링 포함)
+        # 배경 타일 렌더링 (컬링 포함) - blit 큐에 추가
         for tile in scene.background:
             render_coord = (
                 Screen.target_width / 2 - tile.image.get_width() / 2 + tile.x - self.x,
@@ -331,16 +333,20 @@ class Camera:
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
             screen_rect = pygame.Rect(0, 0, Screen.target_width, Screen.target_height)
             if tile_rect.colliderect(screen_rect):
-                Screen.game_surface.blit(tile.image, render_coord)
+                blit_queue.append((tile.image, render_coord))
 
-        # on_ground(땅 위 고정 오브젝트) 먼저 렌더
+        # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
         for entity in self.on_ground:
-            Screen.game_surface.blit(entity[1].image, entity[0])
+            blit_queue.append((entity[1].image, entity[0]))
 
-        # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐)
+        # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐) - blit 큐에 추가
         rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
         for obj in rendering_order:
-            Screen.game_surface.blit(obj[1].image, obj[0])
+            blit_queue.append((obj[1].image, obj[0]))
+
+        # 모아둔 월드 엔티티들을 한번에 blits로 그리기
+        if blit_queue:
+            Screen.game_surface.blits(blit_queue)
 
         # 콜라이더 렌더(디버그)
         for col in collider_visuals:
