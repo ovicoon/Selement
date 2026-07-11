@@ -829,12 +829,7 @@ class Game:
                 self.story()
 
             # 씬 렌더링 (디버그 모드일 때 콜라이더 렌더 여부 컨트롤)
-            if self.debug:
-                self.cam.render_scene(
-                    self.active_scene, pygame_event, render_collider=True
-                )
-            else:
-                self.cam.render_scene(self.active_scene, pygame_event)
+            self.cam.render_scene(self.active_scene, pygame_event)
 
             # 화면 그리기 (스케일 후 중앙에 blit)
             render_surface = pygame.transform.scale(
