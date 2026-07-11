@@ -257,46 +257,15 @@ class World:
         # 월드 배치 엔티티
         for chunk in self._iter_loaded_chunks():
             for e in chunk.entities:
-                if self.player_biome != biome.Biome.water:
-                    # 지상: 수중 전용은 스킵
-                    if e.name in {
-                        "red_coral_reef",
-                        "pink_coral_reef",
-                        "yellow_coral_reef",
-                        "seaweed",
-                    }:
-                        continue
-                    if (
-                        e.name == "portal"
-                        and self.get_tile_biome(e.x, e.y) == biome.Biome.water
-                    ):
-                        continue
-
-                    if e.name == "fire":
-                        e.image = fire_frame
-                    elif e.name == "strong_fire":
-                        e.image = strong_fire_frame
-                    elif e.name == "blue_fire":
-                        e.image = blue_fire_frame
-
-                    self.entities.append(e)
-
-                else:
-                    # 수중: 산호/해초/수중 포탈만 보임
-                    if e.name in {
-                        "red_coral_reef",
-                        "pink_coral_reef",
-                        "yellow_coral_reef",
-                    }:
-                        self.entities.append(e)
-                    elif e.name == "seaweed":
-                        e.image = seaweed_frame
-                        self.entities.append(e)
-                    elif (
-                        e.name == "portal"
-                        and self.get_tile_biome(e.x, e.y) == biome.Biome.water
-                    ):
-                        self.entities.append(e)
+                if e.name == "fire":
+                    e.image = fire_frame
+                elif e.name == "strong_fire":
+                    e.image = strong_fire_frame
+                elif e.name == "blue_fire":
+                    e.image = blue_fire_frame
+                elif e.name == "seaweed":
+                    e.image = seaweed_frame
+                self._append_visible_entity(e)
 
         # 플레이어 파티클
         if self.player.alive:
