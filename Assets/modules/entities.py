@@ -59,6 +59,7 @@ class Entity:
         name: str,
         center_pivot: bool = False,
         do_not_arrange: bool = False,
+        biome: biome.Biome | None = None,
     ) -> None:
         # 위치 및 시각적 표현
         self.x: float = x
@@ -69,6 +70,7 @@ class Entity:
         self.name: str = name
         self.center_pivot: bool = center_pivot
         self.do_not_arrange: bool = do_not_arrange
+        self.biome: biome.Biome | None = biome
 
 
 class MobState(Enum):
@@ -711,7 +713,8 @@ class InteractableEntity(Entity):
         image: Optional[pygame.Surface],
         name: str,
         collider_radius: float,
+        biome: biome.Biome | None = None,
     ) -> None:
-        super().__init__(x, y, image, name)
-        # 안전하게 콜라이더 초기화
+        super().__init__(x, y, image, name, biome=biome)
+        # 콜라이더 초기화
         self.collider: utility.Collider = utility.Collider(x, y, collider_radius)

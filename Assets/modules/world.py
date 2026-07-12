@@ -224,12 +224,18 @@ class World:
         """현재 플레이어 바이옴/수역 상태에 따라 표시 여부를 결정해 버퍼에 추가."""
         if self.player_biome == biome.Biome.water:
             # 수중: 물 속 엔티티만 보이게
-            if self.get_tile_biome(e.x, e.y) == biome.Biome.water:
+            if e.biome == biome.Biome.water:
                 self.entities.append(e)
+            elif e.biome == None:
+                if self.get_tile_biome(e.x, e.y) == biome.Biome.water:
+                    self.entities.append(e)
         else:
             # 지상: 물 속 엔티티는 숨김
-            if self.get_tile_biome(e.x, e.y) != biome.Biome.water:
+            if e.biome != biome.Biome.water and e.biome != None:
                 self.entities.append(e)
+            elif e.biome == None:
+                if self.get_tile_biome(e.x, e.y) != biome.Biome.water:
+                    self.entities.append(e)
 
     def _refresh_entities(self, dt: float) -> None:
         """엔티티 버퍼(self.entities)를 구성."""
@@ -433,10 +439,14 @@ class Chunk:
                             (assets.Image.dry_grass, "dry_grass"),
                         ]
                     )
-                    self.entities.append(entities.Entity(ox, oy, grass_img, grass_name))
+                    self.entities.append(
+                        entities.Entity(ox, oy, grass_img, grass_name, biome=ob)
+                    )
                 elif ob == biome.Biome.water:
                     # 해초는 애니메이션 프레임이므로 이미지 None
-                    self.entities.append(entities.Entity(ox, oy, None, "seaweed"))
+                    self.entities.append(
+                        entities.Entity(ox, oy, None, "seaweed", biome=ob)
+                    )
 
         # 나무 & 불꽃 & 산호
         for _ in range(32):
@@ -458,7 +468,9 @@ class Chunk:
                             (assets.Image.jungle_tree, "jungle_tree"),
                         ]
                     )
-                    self.entities.append(entities.Entity(ox, oy, tree_img, tree_name))
+                    self.entities.append(
+                        entities.Entity(ox, oy, tree_img, tree_name, biome=ob)
+                    )
 
             # 불꽃
             if random.random() > 0.3:
@@ -475,7 +487,9 @@ class Chunk:
                         fire = random.choice([(None, "fire"), (None, "strong_fire")])
                     else:
                         fire = (None, "blue_fire")
-                    self.entities.append(entities.Entity(ox, oy, fire[0], fire[1]))
+                    self.entities.append(
+                        entities.Entity(ox, oy, fire[0], fire[1], biome=ob)
+                    )
 
             # 산호
             if random.random() > 0.6:
@@ -494,7 +508,9 @@ class Chunk:
                             (assets.Image.yellow_coral_reef, "yellow_coral_reef"),
                         ]
                     )
-                    self.entities.append(entities.Entity(ox, oy, coral_img, coral_name))
+                    self.entities.append(
+                        entities.Entity(ox, oy, coral_img, coral_name, biome=ob)
+                    )
 
         # 포탈 (희박)
         if random.random() > 0.99:
@@ -505,7 +521,14 @@ class Chunk:
                 -self.world.chunk_size // 2, self.world.chunk_size // 2
             )
             self.entities.append(
-                entities.InteractableEntity(ox, oy, assets.Image.portal, "portal", 32)
+                entities.InteractableEntity(
+                    ox,
+                    oy,
+                    assets.Image.portal,
+                    "portal",
+                    32,
+                    biome=self.world.get_tile_biome(ox, oy),
+                )
             )
 
 
