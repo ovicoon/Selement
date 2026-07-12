@@ -405,10 +405,11 @@ class FrameTracker:
     """한 프레임 내에서 병목을 측정하기 위한 개발용 타이머"""
 
     def __init__(self) -> None:
-        self.laps: List[(str, float)] = []
+        self.laps: list[tuple[str, float]] = []
 
     def lap(self, label: str) -> None:
-        self.laps.append((label, self.start_time - time.perf_counter()))
+        self.laps.append((label, time.perf_counter() - self.start_time))
+        self.start_tracking()
 
     def start_tracking(self) -> None:
         self.start_time: float = time.perf_counter()
