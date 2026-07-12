@@ -55,7 +55,7 @@ class Entity:
         self,
         x: float,
         y: float,
-        image: Optional[pygame.Surface],
+        image: pygame.Surface | None,
         name: str,
         center_pivot: bool = False,
         do_not_arrange: bool = False,
