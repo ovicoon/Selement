@@ -146,8 +146,9 @@ class Collider:
                     assets.Image.circle, (self.data * 2, self.data * 2)
                 )
 
-        # 마스크/rect 갱신
-        self.mask = pygame.mask.from_surface(self.surface)
+            # 마스크/rect 갱신
+            self.mask = pygame.mask.from_surface(self.surface)
+
         if self.center_pivot:
             self.rect = self.surface.get_rect(center=(self.x, self.y))
         else:
