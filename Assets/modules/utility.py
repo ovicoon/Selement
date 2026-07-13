@@ -701,7 +701,7 @@ class Line:
             y + button_relative_coord[1],
             100,
             50,
-            language.TextKey.NEXT,
+            language.Language.NEXT,
             (200, 200, 200),
             (150, 150, 150),
             self.next_line,
