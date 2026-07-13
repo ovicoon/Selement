@@ -671,7 +671,7 @@ class InputField:
 
 
 class Line:
-    """대사(문장) 출력용 객체: 타이핑 효과와 엔터로 다음 라인 전환"""
+    """대사(문장) 출력용 객체: 타이핑 효과와 버튼으로 다음 라인 전환"""
 
     def __init__(
         self,
@@ -679,6 +679,7 @@ class Line:
         y: float,
         speed: float,
         lines: List[str],
+        lang: language.Language,
         center_pivot: bool = True,
         name: Optional[str] = None,
         button_relative_coord: Tuple[float, float] = (0, 100),
@@ -701,7 +702,7 @@ class Line:
             y + button_relative_coord[1],
             100,
             50,
-            language.Language.NEXT,
+            lang.get(language.TextKey.NEXT)[0],
             (200, 200, 200),
             (150, 150, 150),
             self.next_line,
@@ -724,11 +725,9 @@ class Line:
             if self.timer:
                 self.timer.reset()
 
-        if self.text_index > len(self.lines[self.line_index]):
-            if self.line_index >= len(self.lines):
-                self.active = False
-                self.completed = True
-                return
+        if self.line_index >= len(self.lines):
+            self.active = False
+            self.completed = True
 
     def update(self, pygame_event: List[Any]) -> None:
         """현재 타이머/텍스트 인덱스 기준으로 텍스트를 점진 출력"""

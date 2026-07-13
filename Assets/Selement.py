@@ -471,6 +471,7 @@ class Game:
             300,
             0.1,
             self.lang.get(language.LineKey.INTRO, username=self.username),
+            self.lang,
         )
         self.current_line.start()
 
@@ -692,11 +693,12 @@ class Game:
                         300,
                         0.1,
                         self.lang.get(language.LineKey.BEFORE_BOSS),
+                        self.lang,
                         name="before boss",
                     )
                 else:
                     self.current_line = utility.Line(
-                        0, 300, 0.1, ["before boss"], name="before boss"
+                        0, 300, 0.1, ["before boss"], self.lang, name="before boss"
                     )
 
                 self.current_line.start()
@@ -719,11 +721,12 @@ class Game:
                             300,
                             0.1,
                             self.lang.get(language.LineKey.AFTER_BOSS),
+                            self.lang,
                             name="after boss",
                         )
                     else:
                         self.current_line = utility.Line(
-                            0, 300, 0.1, ["after boss"], name="after boss"
+                            0, 300, 0.1, ["after boss"], self.lang, name="after boss"
                         )
                     self.current_line.start()
 
@@ -752,6 +755,7 @@ class Game:
                                     language.LineKey.NORMAL_ENDING,
                                     username=self.username,
                                 ),
+                                self.lang,
                                 name="the end",
                             )
                         else:
@@ -763,11 +767,12 @@ class Game:
                                     language.LineKey.EASTER_EGG_ENDING,
                                     username=self.username,
                                 ),
+                                self.lang,
                                 name="the end",
                             )
                     else:
                         self.current_line = utility.Line(
-                            0, 0, 0.1, ["The End"], name="the end"
+                            0, 0, 0.1, ["The End"], self.lang, name="the end"
                         )
 
                     self.current_line.start()

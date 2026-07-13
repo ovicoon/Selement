@@ -352,7 +352,7 @@ class LanguageManager:
     def set_language(self, language: Language) -> None:
         self.language = language
 
-    def get(self, key: LineKey, **kwargs) -> List[str]:
+    def get(self, key: LineKey | TextKey, **kwargs) -> List[str]:
         lines = LANGUAGE_DATA[self.language][key]
         return [line.format(**kwargs) for line in lines]
 
