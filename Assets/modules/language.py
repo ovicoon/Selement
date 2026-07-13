@@ -77,6 +77,7 @@ class TextKey(Enum):
     DEBUG_INFO = "DEBUG_INFO"
     ERR_WHILE_DEBUG = "ERR_WHILE_DEBUG"
     GAME_OVER = "GAME_OVER"
+    NEXT = "NEXT"
 
 
 # =========================
@@ -207,6 +208,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
         ],
         TextKey.ERR_WHILE_DEBUG: ["디버그 정보 로드 중 오류 발생"],
         TextKey.GAME_OVER: ["게임 오버!"],
+        TextKey.NEXT: ["다음"],
     },
     Language.ENGLISH: {
         LineKey.INTRO: [
@@ -333,6 +335,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
         ],
         TextKey.ERR_WHILE_DEBUG: ["Error occurred while loading debug info"],
         TextKey.GAME_OVER: ["Game Over!"],
+        TextKey.NEXT: ["Next"],
     },
 }
 

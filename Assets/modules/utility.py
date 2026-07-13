@@ -40,6 +40,7 @@ if __name__ == "__main__":
     sys.exit()
 else:
     from . import assets
+    from . import language
 
 
 # -----------------------
@@ -680,6 +681,7 @@ class Line:
         lines: List[str],
         center_pivot: bool = True,
         name: Optional[str] = None,
+        button_relative_coord: Tuple[float, float] = (0, 100),
     ) -> None:
         self.x: float = x
         self.y: float = y
@@ -694,6 +696,18 @@ class Line:
         self.completed: bool = False
         self.timer: Optional[TimeKeeper] = None
 
+        self.button: Button = Button(
+            x + button_relative_coord[0],
+            y + button_relative_coord[1],
+            100,
+            50,
+            language.TextKey.NEXT,
+            (200, 200, 200),
+            (150, 150, 150),
+            self.next_line,
+            assets.Font.small,
+        )
+
     def start(self) -> None:
         """대사 재생 시작"""
         if not self.active:
@@ -702,25 +716,26 @@ class Line:
             self.text_index: int = 0
             self.timer = TimeKeeper()
 
+    def next_line(self) -> None:
+        """다음 대사로 전환"""
+        if self.active:
+            self.line_index += 1
+            self.text_index = 0
+            if self.timer:
+                self.timer.reset()
+
+        if self.text_index > len(self.lines[self.line_index]):
+            if self.line_index >= len(self.lines):
+                self.active = False
+                self.completed = True
+                return
+
     def update(self, pygame_event: List[Any]) -> None:
-        """현재 타이머/텍스트 인덱스 기준으로 텍스트를 점진 출력하고, 엔터로 다음 라인 전환"""
+        """현재 타이머/텍스트 인덱스 기준으로 텍스트를 점진 출력"""
         if self.active:
             self.text_index = int(
                 (self.timer.elapsed_time() // self.speed) if self.timer else 0
             )
-
-            for event in pygame_event:
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                    self.line_index += 1
-                    self.text_index = 0
-                    if self.timer:
-                        self.timer.reset()
-
-            if self.text_index > len(self.lines[self.line_index]):
-                if self.line_index >= len(self.lines):
-                    self.active = False
-                    self.completed = True
-                    return
 
             text = self.lines[self.line_index][: self.text_index]
             self.text_surface = str_to_surface(text, self.font, (255, 255, 255))
@@ -735,3 +750,4 @@ class Line:
                 self.text_rect = self.text_surface.get_rect(topleft=(self.x, self.y))
 
             Screen.game_surface.blit(self.text_surface, self.text_rect)
+            self.button.update(pygame_event)
