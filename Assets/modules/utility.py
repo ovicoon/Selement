@@ -703,8 +703,8 @@ class Line:
             100,
             50,
             lang.get(language.TextKey.NEXT)[0],
-            (200, 200, 200),
-            (150, 150, 150),
+            (255, 255, 255),
+            (100, 100, 100),
             self.next_line,
             assets.Font.small,
         )
