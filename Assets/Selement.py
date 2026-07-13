@@ -157,9 +157,12 @@ class Game:
         self.end_scene: utility.Scene = utility.Scene()
         self.key_scene: utility.Scene = utility.Scene()
 
-        # 씬별 구성 메서드 호출
+        # 최소 씬 구성 메서드 호출
         self._setup_intro_scene()
         self._setup_language_scene()
+
+    def _setup_all_scene(self) -> None:
+        """나머지 모든 씬 구성 호출"""
         self._setup_title_scene()
         self._setup_credit_scene()
         self._setup_username_scene()
@@ -419,13 +422,15 @@ class Game:
         self.set_scene(self.key_scene)
 
     def set_language_english(self) -> None:
-        """언어를 영어로 설정하고 이름 입력 씬으로 전환"""
+        """언어를 영어로 설정하고 씬 구성 후 이름 입력 씬으로 전환"""
         self.lang.set_language(language.Language.ENGLISH)
+        self._setup_all_scene()
         self.set_scene(self.input_username)
 
     def set_language_korean(self) -> None:
-        """언어를 한국어로 설정하고 이름 입력 씬으로 전환"""
+        """언어를 한국어로 설정하고 씬 구성 후 이름 입력 씬으로 전환"""
         self.lang.set_language(language.Language.KOREAN)
+        self._setup_all_scene()
         self.set_scene(self.input_username)
 
     def game_start(self) -> None:
