@@ -52,7 +52,7 @@ from modules import (
 # ==========================
 DEVELOP_MODE: bool = True
 VERSION: str = "1.4.0" if not DEVELOP_MODE else "dev"
-LANGUAGE: language.Language = language.Language.KOREAN
+LANGUAGE: language.Language = language.Language.ENGLISH
 
 INTRO_SCENE_DURATION: float = 0.5 if DEVELOP_MODE else 2.0  # 인트로 씬 지속 시간
 FPS_LIMIT: int = 60  # 초당 최대 프레임
@@ -159,6 +159,7 @@ class Game:
 
         # 씬별 구성 메서드 호출
         self._setup_intro_scene()
+        self._setup_language_scene()
         self._setup_title_scene()
         self._setup_credit_scene()
         self._setup_username_scene()
@@ -172,11 +173,10 @@ class Game:
 
     def _setup_language_scene(self) -> None:
         """언어 선택 씬 구성"""
-        self.language_scene.ui.append(utility.OverLaySurface(0, 0, assets.Image.icon))
         self.language_scene.ui.append(
             utility.OverLaySurface(
                 0,
-                -300,
+                -400,
                 utility.str_to_surface(
                     self.lang.get(language.TextKey.SELECT_LANGUAGE)[0],
                     assets.Font.medium,
@@ -184,21 +184,34 @@ class Game:
                 ),
             )
         )
-        # 언어 선택 버튼들
-        for idx, lang in enumerate(language.Language):
-            self.language_scene.ui.append(
-                utility.Button(
-                    0,
-                    idx * 150,
-                    600,
-                    100,
-                    lang.name.capitalize(),
-                    (255, 255, 255),
-                    (100, 100, 100),
-                    lambda l=lang: self.set_language(l),
-                    assets.Font.small,
-                )
+        # 영어 버튼
+        self.language_scene.ui.append(
+            utility.Button(
+                0,
+                -150,
+                600,
+                200,
+                self.lang.get(language.TextKey.ENGLISH)[0],
+                (255, 255, 255),
+                (100, 100, 100),
+                self.set_language_english,
+                assets.Font.medium,
             )
+        )
+        # 한국어 버튼
+        self.language_scene.ui.append(
+            utility.Button(
+                0,
+                150,
+                600,
+                200,
+                self.lang.get(language.TextKey.KOREAN)[0],
+                (255, 255, 255),
+                (100, 100, 100),
+                self.set_language_korean,
+                assets.Font.medium,
+            )
+        )
 
     def _setup_title_scene(self) -> None:
         """타이틀 씬 구성: 게임 로고, 타이틀 텍스트, 주요 버튼들"""
@@ -404,6 +417,16 @@ class Game:
     def show_keys(self) -> None:
         """키 안내 씬으로 전환"""
         self.set_scene(self.key_scene)
+
+    def set_language_english(self) -> None:
+        """언어를 영어로 설정하고 이름 입력 씬으로 전환"""
+        self.lang.set_language(language.Language.ENGLISH)
+        self.set_scene(self.input_username)
+
+    def set_language_korean(self) -> None:
+        """언어를 한국어로 설정하고 이름 입력 씬으로 전환"""
+        self.lang.set_language(language.Language.KOREAN)
+        self.set_scene(self.input_username)
 
     def game_start(self) -> None:
         """플레이 시작: username -> SHA256 -> numeric seed -> 월드 생성"""
@@ -809,7 +832,7 @@ class Game:
                 self.title_scene_timer.is_finished()
                 and self.active_scene == self.intro_scene
             ):
-                self.set_scene(self.input_username)
+                self.set_scene(self.language_scene)
 
             # 플레이 씬 로직
             if self.active_scene == self.play_scene:
