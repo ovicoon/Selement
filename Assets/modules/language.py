@@ -64,6 +64,7 @@ class TextKey(Enum):
     """텍스트 키 정의"""
 
     INPUT_NAME = "INPUT_NAME"
+    SELECT_LANGUAGE = "SELECT_LANGUAGE"
     PLAY = "PLAY"
     EXIT = "EXIT"
     CONTROLS = "CONTROLS"
@@ -177,6 +178,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
             "The End",
         ],
         TextKey.INPUT_NAME: ["유저 이름을 입력하세요"],
+        TextKey.SELECT_LANGUAGE: ["언어 선택"],
         TextKey.PLAY: ["플레이"],
         TextKey.EXIT: ["종료"],
         TextKey.CONTROLS: ["조작법"],
@@ -300,6 +302,7 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
             "The End",
         ],
         TextKey.INPUT_NAME: ["Please enter username"],
+        TextKey.SELECT_LANGUAGE: ["Select Language"],
         TextKey.PLAY: ["Play"],
         TextKey.EXIT: ["exit"],
         TextKey.CONTROLS: ["ctrls"],

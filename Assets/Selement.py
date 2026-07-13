@@ -149,6 +149,7 @@ class Game:
         """모든 씬 객체 생성 및 각 씬 초기 구성 호출"""
         self.active_scene = None
         self.intro_scene: utility.Scene = utility.Scene()
+        self.language_scene: utility.Scene = utility.Scene()
         self.play_scene: utility.Scene = utility.Scene()
         self.title_scene: utility.Scene = utility.Scene()
         self.credit_scene: utility.Scene = utility.Scene()
@@ -168,6 +169,36 @@ class Game:
         self.intro_scene.ui.append(
             utility.OverLaySurface(0, 0, assets.Image.zero_dragon_logo)
         )
+
+    def _setup_language_scene(self) -> None:
+        """언어 선택 씬 구성"""
+        self.language_scene.ui.append(utility.OverLaySurface(0, 0, assets.Image.icon))
+        self.language_scene.ui.append(
+            utility.OverLaySurface(
+                0,
+                -300,
+                utility.str_to_surface(
+                    self.lang.get(language.TextKey.SELECT_LANGUAGE)[0],
+                    assets.Font.medium,
+                    (255, 255, 255),
+                ),
+            )
+        )
+        # 언어 선택 버튼들
+        for idx, lang in enumerate(language.Language):
+            self.language_scene.ui.append(
+                utility.Button(
+                    0,
+                    idx * 150,
+                    600,
+                    100,
+                    lang.name.capitalize(),
+                    (255, 255, 255),
+                    (100, 100, 100),
+                    lambda l=lang: self.set_language(l),
+                    assets.Font.small,
+                )
+            )
 
     def _setup_title_scene(self) -> None:
         """타이틀 씬 구성: 게임 로고, 타이틀 텍스트, 주요 버튼들"""
