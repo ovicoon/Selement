@@ -708,14 +708,15 @@ class Line:
             self.text_index = int(
                 (self.timer.elapsed_time() // self.speed) if self.timer else 0
             )
-            if self.text_index > len(self.lines[self.line_index]):
-                for event in pygame_event:
-                    if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                        self.line_index += 1
-                        self.text_index = 0
-                        if self.timer:
-                            self.timer.reset()
 
+            for event in pygame_event:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    self.line_index += 1
+                    self.text_index = 0
+                    if self.timer:
+                        self.timer.reset()
+
+            if self.text_index > len(self.lines[self.line_index]):
                 if self.line_index >= len(self.lines):
                     self.active = False
                     self.completed = True
