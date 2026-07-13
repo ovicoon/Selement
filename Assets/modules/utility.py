@@ -262,7 +262,11 @@ class Camera:
             self.shake_strength = 0
 
     def render_scene(
-        self, scene: Scene, pygame_event: List[Any], render_collider: bool = False
+        self,
+        scene: Scene,
+        pygame_event: List[Any],
+        view: int,
+        render_collider: bool = False,
     ) -> None:
         """
         씬 렌더링:
@@ -307,12 +311,11 @@ class Camera:
                     )
 
                 entity_rect = pygame.Rect(render_coord, entity.image.get_size())
-                screen_rect = pygame.Rect(
-                    0, 0, Screen.target_width, Screen.target_height
-                )
+                viewport_rect = pygame.Rect(0, 0, view * 2, view * 2)
+                viewport_rect.center = Screen.game_surface.get_rect().center
 
                 # 엔티티 컬링: 화면 내부에 있으면 rendering_objects에, do_not_arrange면 on_ground에
-                if entity_rect.colliderect(screen_rect) and not getattr(
+                if entity_rect.colliderect(viewport_rect) and not getattr(
                     entity, "do_not_arrange", False
                 ):
                     self.rendering_objects.append((render_coord, entity))
@@ -334,8 +337,8 @@ class Camera:
                 - self.y,
             )
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
-            screen_rect = pygame.Rect(0, 0, Screen.target_width, Screen.target_height)
-            if tile_rect.colliderect(screen_rect):
+            viewport_rect = pygame.Rect(0, 0, Screen.target_width, Screen.target_height)
+            if tile_rect.colliderect(viewport_rect):
                 blit_queue.append((tile.image, render_coord))
 
         # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
