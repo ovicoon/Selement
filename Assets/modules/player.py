@@ -135,9 +135,11 @@ class Player:
         )
 
         # 원소(자원) 관련
-        self.element_charge_speed: float = 0.1
+        self.element_charge_speed: float = 5
         self.element_max: int = 100
-        self.element_charge_timer: utility.TimeKeeper = utility.TimeKeeper(duration=0)
+        self.element_charge_timer: utility.TimeKeeper = utility.TimeKeeper(
+            duration=self.element_charge_speed
+        )
         self.charging: bool = False
 
         self.fire: int = 0
@@ -336,39 +338,32 @@ class Player:
         if keys[pygame.K_f]:
             self.charging = True
             if self.element_charge_timer.is_finished():
-                if (
-                    self.player_biome == biome.Biome.fire
-                    and self.fire < self.element_max
-                ):
-                    self.fire += 1
-                elif (
-                    self.player_biome == biome.Biome.water
-                    and self.water < self.element_max
-                ):
-                    self.water += 1
-                elif (
-                    self.player_biome == biome.Biome.dirt
-                    and self.dirt < self.element_max
-                ):
-                    self.dirt += 1
-                elif (
-                    self.player_biome == biome.Biome.air and self.air < self.element_max
-                ):
-                    self.air += 1
+                if self.player_biome == biome.Biome.fire:
+                    self.fire += 50
+                elif self.player_biome == biome.Biome.water:
+                    self.water += 50
+                elif self.player_biome == biome.Biome.dirt:
+                    self.dirt += 50
+                elif self.player_biome == biome.Biome.air:
+                    self.air += 50
                 elif self.player_biome == biome.Biome.fifth_biome:
-                    if self.fire < self.element_max:
-                        self.fire += 1
-                    if self.water < self.element_max:
-                        self.water += 1
-                    if self.dirt < self.element_max:
-                        self.dirt += 1
-                    if self.air < self.element_max:
-                        self.air += 1
+                    self.fire += 10
+                    self.water += 10
+                    self.dirt += 10
+                    self.air += 10
 
                 # 타이머 재설정
                 self.element_charge_timer = utility.TimeKeeper(
                     duration=self.element_charge_speed
                 )
+                if self.fire > self.element_max:
+                    self.fire = self.element_max
+                if self.water > self.element_max:
+                    self.water = self.element_max
+                if self.dirt > self.element_max:
+                    self.dirt = self.element_max
+                if self.air > self.element_max:
+                    self.air = self.element_max
 
     # --------------------
     # 공격 타입 선택 (마우스 휠)
