@@ -291,7 +291,7 @@ class Image:
             pygame.image.load("Images/dead_screen.png").convert_alpha(), HP_SCREEN_SIZE
         )
         Image.dark_screen = pygame.transform.scale(
-            pygame.image.load("Images/dark_screen.png").convert(), HP_SCREEN_SIZE
+            pygame.image.load("Images/dark_screen.png").convert_alpha(), HP_SCREEN_SIZE
         )
 
         # circle (collider 시각화 등)
