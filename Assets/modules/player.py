@@ -184,7 +184,7 @@ class Player:
         self._handle_player_movement(keys, dt, world, player_move=not self.charging)
 
         # 피격 처리
-        self._update_hp(world)
+        self._update_hp(world, dt)
 
         # 사망 처리
         if self.hp <= 0:
@@ -211,7 +211,7 @@ class Player:
         if self.hp < 0:
             self.hp = 0
 
-    def _update_hp(self, world: Any) -> None:
+    def _update_hp(self, world: Any, dt: float) -> None:
         """
         몬스터 공격 리스트(world.mob_attack)와 충돌 검사하여 HP 갱신
         - 타이머가 있는 공격은 타이머 완료 시 데미지 적용
@@ -235,6 +235,12 @@ class Player:
         for attack in attack_to_remove:
             if isinstance(attack, entities.Projectile):
                 world.mob_attack.remove(attack)
+
+        self.hp += ((self.hp / self.max_hp) ** 2) * 10 * dt
+
+        # 체력 상한 적용
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp
 
     # --------------------
     # 이동 처리
@@ -637,10 +643,6 @@ class Player:
             )
         else:
             self.defence = 0
-
-        # 체력 상한 적용
-        if self.hp > self.max_hp:
-            self.hp = self.max_hp
 
         if self.player_biome == biome.Biome.water:
             # 물속에 있을 때 시야 감소
