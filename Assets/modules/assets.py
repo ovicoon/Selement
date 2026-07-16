@@ -48,7 +48,7 @@ TILE_SIZE: Tuple[int, int] = (128, 128)
 BOSS_SMOG_SIZE: Tuple[int, int] = (64, 64)
 PARTICLE_SIZE: Tuple[int, int] = (64, 64)
 ICON_SIZE: Tuple[int, int] = (128, 128)
-HP_SCREEN_SIZE: Tuple[int, int] = (1920, 1080)
+SCREEN_SIZE: Tuple[int, int] = (1920, 1080)
 
 
 class Font:
@@ -117,6 +117,7 @@ class Image:
 
     dead_screen: Optional[pygame.Surface] = None
     dark_screen: Optional[pygame.Surface] = None
+    gray_screen: pygame.Surface | None = None
 
     circle: Optional[pygame.Surface] = None
 
@@ -284,10 +285,13 @@ class Image:
 
         # 화면 효과
         Image.dead_screen = pygame.transform.scale(
-            pygame.image.load("Images/dead_screen.png").convert_alpha(), HP_SCREEN_SIZE
+            pygame.image.load("Images/dead_screen.png").convert_alpha(), SCREEN_SIZE
         )
         Image.dark_screen = pygame.transform.scale(
-            pygame.image.load("Images/dark_screen.png").convert_alpha(), HP_SCREEN_SIZE
+            pygame.image.load("Images/dark_screen.png").convert_alpha(), SCREEN_SIZE
+        )
+        Image.gray_screen = pygame.transform.scale(
+            pygame.image.load("Images/gray_screen.png").convert_alpha(), SCREEN_SIZE
         )
 
         # circle (collider 시각화 등)
