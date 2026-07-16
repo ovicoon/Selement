@@ -349,9 +349,10 @@ class Camera:
                     self.on_ground.append((render_coord, entity))
 
             # 디버그용 콜라이더 시각화 대상 수집
-            if render_collider and hasattr(entity, "collider"):
-                if type(entity.collider) == FastCollider:
-                    collider_visuals.append(entity.collider)
+            if render_collider:
+                if hasattr(entity, "collider"):
+                    if type(entity.collider) == FastCollider:
+                        collider_visuals.append(entity.collider)
 
         # 배경 타일 렌더링 (컬링 포함) - blit 큐에 추가
         for tile in scene.background:

@@ -163,7 +163,7 @@ class Image:
         * 이 함수는 pygame 초기화 이후에 호출되어야 합니다.
         """
         # 아이콘 설정 (창 아이콘)
-        Image.icon = pygame.image.load("Images/icon.jpeg").convert_alpha()
+        Image.icon = pygame.image.load("Images/icon.jpeg").convert()
         pygame.display.set_icon(Image.icon)
 
         # 나무
@@ -201,7 +201,7 @@ class Image:
 
         # 포탈
         Image.portal = pygame.transform.scale(
-            pygame.image.load("Images/portal.png").convert_alpha(), ENTITY_SIZE
+            pygame.image.load("Images/portal.png").convert(), ENTITY_SIZE
         )
 
         # 타일
@@ -240,12 +240,12 @@ class Image:
             ENTITY_SIZE,
         )
         Image.boss_smog = pygame.transform.scale(
-            pygame.image.load("Images/boss_smog.png").convert_alpha(), BOSS_SMOG_SIZE
+            pygame.image.load("Images/boss_smog.png").convert(), BOSS_SMOG_SIZE
         )
 
-        # 로고 / HP UI
+        # 로고
         Image.zero_dragon_logo = pygame.transform.scale(
-            pygame.image.load("Images/Zero Dragon.png").convert_alpha(), (512, 512)
+            pygame.image.load("Images/Zero Dragon.png").convert(), (512, 512)
         )
 
         # 파티클
@@ -254,13 +254,13 @@ class Image:
             PARTICLE_SIZE,
         )
         Image.smog = pygame.transform.scale(
-            pygame.image.load("Images/smog.png").convert_alpha(), PARTICLE_SIZE
+            pygame.image.load("Images/smog.png").convert(), PARTICLE_SIZE
         )
         Image.hit_particle = pygame.transform.scale(
             pygame.image.load("Images/hit_particle.png").convert_alpha(), PARTICLE_SIZE
         )
         Image.light = pygame.transform.scale(
-            pygame.image.load("Images/light.png").convert_alpha(), PARTICLE_SIZE
+            pygame.image.load("Images/light.png").convert(), PARTICLE_SIZE
         )
 
         # 투사체 / 효과
@@ -284,14 +284,14 @@ class Image:
 
         # 화면 효과
         Image.dead_screen = pygame.transform.scale(
-            pygame.image.load("Images/dead_screen.png").convert_alpha(), SCREEN_SIZE
+            pygame.image.load("Images/dead_screen.png").convert(), SCREEN_SIZE
         )
         Image.dark_screen = pygame.transform.scale(
-            pygame.image.load("Images/dark_screen.png").convert_alpha(), SCREEN_SIZE
+            pygame.image.load("Images/dark_screen.png").convert(), SCREEN_SIZE
         )
 
         # circle (collider 시각화 등)
-        Image.circle = pygame.image.load("Images/circle.png").convert_alpha()
+        Image.circle = pygame.image.load("Images/circle.png").convert()
 
         # 아이콘
         Image.fire_icon = pygame.transform.scale(
