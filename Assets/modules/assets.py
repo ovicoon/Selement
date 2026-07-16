@@ -284,7 +284,7 @@ class Image:
 
         # 화면 효과
         Image.dead_screen = pygame.transform.scale(
-            pygame.image.load("Images/dead_screen.png").convert(), SCREEN_SIZE
+            pygame.image.load("Images/dead_screen.png").convert_alpha(), SCREEN_SIZE
         )
         Image.dark_screen = pygame.transform.scale(
             pygame.image.load("Images/dark_screen.png").convert(), SCREEN_SIZE
