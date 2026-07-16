@@ -852,7 +852,10 @@ class Game:
             # 씬 렌더링
             if self.game_world != None:
                 self.cam.render_scene(
-                    self.active_scene, pygame_event, self.game_world.player.player_view
+                    self.active_scene,
+                    pygame_event,
+                    self.game_world.player.player_view,
+                    render_collider=True,
                 )
             else:
                 self.cam.render_scene(

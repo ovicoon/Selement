@@ -88,7 +88,7 @@ class ColliderType(Enum):
     circle_collider = 1
 
 
-class NewCollider:
+class FastCollider:
     """원형 충돌 감지"""
 
     def __init__(self, x: float, y: float, radius: float) -> None:
@@ -96,7 +96,7 @@ class NewCollider:
         self.y: float = y
         self.radius: float = radius
 
-    def collide(self, collider: "NewCollider") -> bool:
+    def collide(self, collider: "FastCollider") -> bool:
         """
         두 콜라이더가 충돌하는지 검사.
         """
@@ -304,7 +304,7 @@ class Camera:
         Screen.screen.fill((0, 0, 0))
         Screen.game_surface.fill((0, 0, 0))
 
-        collider_visuals: List[Collider] = []
+        collider_visuals = []
         # 일괄 렌더링을 위한 blit 큐 생성
         blit_queue: List[Tuple[Any, Tuple[float, float]]] = []
 
@@ -350,7 +350,7 @@ class Camera:
 
             # 디버그용 콜라이더 시각화 대상 수집
             if render_collider and hasattr(entity, "collider"):
-                if entity.collider.type == ColliderType.circle_collider:
+                if type(entity.collider) == FastCollider:
                     collider_visuals.append(entity.collider)
 
         # 배경 타일 렌더링 (컬링 포함) - blit 큐에 추가
@@ -388,7 +388,7 @@ class Camera:
                     Screen.target_width / 2 + col.x - self.x,
                     Screen.target_height / 2 + col.y - self.y,
                 ),
-                col.data,
+                col.radius,
                 10,
             )
 
