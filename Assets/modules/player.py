@@ -134,7 +134,7 @@ class Player:
             self.x, self.y, DEFAULT_COLLIDER_RADIUS
         )
         self.fast_collider: utility.FastCollider = utility.FastCollider(
-            self.x, self.y, DEFAULT_COLLIDER_RADIUS
+            self.x, self.y - DEFAULT_COLLIDER_RADIUS, DEFAULT_COLLIDER_RADIUS
         )
 
         # 원소(자원) 관련
@@ -336,7 +336,10 @@ class Player:
             pass
 
         # 콜라이더 및 카메라 갱신 (안전 호출)
-        self.collider.update(self.x, self.y, 32)
+        self.collider.update(self.x, self.y, DEFAULT_COLLIDER_RADIUS)
+        self.fast_collider.update(
+            self.x, self.y - DEFAULT_COLLIDER_RADIUS, DEFAULT_COLLIDER_RADIUS
+        )
         self.cam.update_position(self.x, self.y, dt)
 
     # --------------------
