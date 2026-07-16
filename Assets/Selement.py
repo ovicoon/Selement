@@ -869,7 +869,9 @@ class Game:
                 )
 
                 # 월드 업데이트 및 씬 동기화
-                self.game_world.update(self.dt, keys, pygame_event)
+                self.game_world.update(
+                    self.dt, keys, pygame_event, self.active_scene.ui
+                )
                 self.play_scene.entities = self.game_world.entities
                 self.play_scene.background = self.game_world.background
 

@@ -24,7 +24,7 @@ from __future__ import annotations
 import math
 import random
 import sys
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import pygame
 
@@ -302,7 +302,7 @@ class World:
             proj_list.remove(p)
 
     # ---- 프레임 업데이트 ----
-    def update(self, dt: float, keys, pygame_event) -> None:
+    def update(self, dt: float, keys, pygame_event, ui_list: list[Any]) -> None:
         """월드 한 프레임 업데이트."""
         # 청크 이동 감지 >> 로드/언로드
         self.current_chunk = self._to_chunk_center(self.player.x, self.player.y)
@@ -329,7 +329,7 @@ class World:
         self.last_chunk = self.current_chunk
 
         # 플레이어 업데이트 (입력/물리)
-        self.player.update(self, keys, pygame_event, dt)
+        self.player.update(self, keys, pygame_event, dt, ui_list)
 
     # ---- 게임 틱 ----
     def _game_tick(self) -> None:
@@ -594,14 +594,14 @@ class Room(World):
         # 보스 배치
         self.mob.append(entities.BossSelf(0, 0))
 
-    def update(self, dt: float, keys, pygame_event) -> None:
+    def update(self, dt: float, keys, pygame_event, ui_list: list[Any]) -> None:
         self.entities.clear()
 
         self.player_biome = self.get_tile_biome(self.player.x, self.player.y)
 
         self._render_entities_room(dt)
 
-        self.player.update(self, keys, pygame_event, dt)
+        self.player.update(self, keys, pygame_event, dt, ui_list)
 
     # Room 전용 엔티티 렌더 버퍼 구성
     def _render_entities_room(self, dt: float) -> None:

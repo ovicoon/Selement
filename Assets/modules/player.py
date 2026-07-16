@@ -158,7 +158,14 @@ class Player:
     # --------------------
     # 프레임 업데이트 엔트리
     # --------------------
-    def update(self, world: Any, keys: Any, pygame_event: List[Any], dt: float) -> None:
+    def update(
+        self,
+        world: Any,
+        keys: Any,
+        pygame_event: List[Any],
+        dt: float,
+        ui_list: list[Any],
+    ) -> None:
         """
         한 프레임 동안 플레이어 상태를 업데이트
         순서:
@@ -177,7 +184,7 @@ class Player:
 
             # 공격 타입 선택 및 공격(충전 중에는 공격 불가)
             self._select_attack_type(pygame_event)
-            self._attack(pygame_event, world)
+            self._attack(pygame_event, world, ui_list)
 
         # 모든 프레임에서 효과 적용 (버프/디버프 등)
         self._apply_effect(world, dt)
@@ -406,7 +413,7 @@ class Player:
     # --------------------
     # 공격 처리 (좌/우 클릭)
     # --------------------
-    def _attack(self, pygame_event: List[Any], world: Any) -> None:
+    def _attack(self, pygame_event: List[Any], world: Any, ui_list: list[Any]) -> None:
         """
         마우스 입력에 따라 공격 실행
         - 좌클릭: 일반 공격
@@ -417,6 +424,15 @@ class Player:
         for event in pygame_event:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button in (1, 3):
+                    for ui in ui_list:
+                        if isinstance(ui, utility.Button):
+                            if ui.rect.collidepoint(pygame.mouse.get_pos()):
+                                return  # UI 버튼 클릭 시 공격 무시
+
+                        if isinstance(ui, utility.Line):
+                            if ui.button.rect.collidepoint(pygame.mouse.get_pos()):
+                                return  # UI 버튼 클릭 시 공격 무시
+
                     mouse_btn = event.button
 
         if self.charging:
