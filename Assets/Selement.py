@@ -51,6 +51,7 @@ from modules import (
 # 상수 정의 (개발/게임 환경)
 # ==========================
 DEVELOP_MODE: bool = True
+RENDER_COLLIDER: bool = False
 VERSION: str = "1.4.0" if not DEVELOP_MODE else "dev"
 LANGUAGE: language.Language = language.Language.ENGLISH
 
@@ -855,7 +856,7 @@ class Game:
                     self.active_scene,
                     pygame_event,
                     self.game_world.player.player_view,
-                    render_collider=True,
+                    render_collider=RENDER_COLLIDER,
                 )
             else:
                 self.cam.render_scene(
