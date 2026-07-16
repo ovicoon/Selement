@@ -285,6 +285,10 @@ class Camera:
         # 일괄 렌더링을 위한 blit 큐 생성
         blit_queue: List[Tuple[Any, Tuple[float, float]]] = []
 
+        # 더 효율적으로 보이는부분만 컬링하기 위함
+        viewport_rect = pygame.Rect(0, 0, view * 2, view * 2)
+        viewport_rect.center = Screen.game_surface.get_rect().center
+
         # 엔티티 리스트 처리: 컬링 및 그리기 대상 분류
         for entity in scene.entities:
             if getattr(entity, "image", None):
@@ -312,8 +316,6 @@ class Camera:
                     )
 
                 entity_rect = pygame.Rect(render_coord, entity.image.get_size())
-                viewport_rect = pygame.Rect(0, 0, view * 2, view * 2)
-                viewport_rect.center = Screen.game_surface.get_rect().center
 
                 # 엔티티 컬링: 화면 내부에 있으면 rendering_objects에, do_not_arrange면 on_ground에
                 if entity_rect.colliderect(viewport_rect) and not getattr(
@@ -338,7 +340,6 @@ class Camera:
                 - self.y,
             )
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
-            viewport_rect = pygame.Rect(0, 0, Screen.target_width, Screen.target_height)
             if tile_rect.colliderect(viewport_rect):
                 blit_queue.append((tile.image, render_coord))
 
