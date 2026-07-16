@@ -596,7 +596,10 @@ class BossSelf(Mob):
 
 
 class ShockWave(Entity):
-    """충격파: 반지름이 증가하는 범위형 공격"""
+    """
+    충격파: 반지름이 증가하는 범위형 공격
+    FastCollider 사용
+    """
 
     def __init__(
         self,
@@ -620,9 +623,7 @@ class ShockWave(Entity):
         init_size: int = max(1, int(self.wave_distance * 2))
         self.image = pygame.transform.scale(self.origin_image, (init_size, init_size))
 
-        self.collider: utility.Collider = utility.Collider(
-            self.x, self.y, 0, center_pivot=True
-        )
+        self.collider: utility.FastCollider = utility.Collider(self.x, self.y, 0)
         self.attack_speed: float = 0.1
         self.timer: utility.TimeKeeper = utility.TimeKeeper(self.attack_speed)
         self.alive: bool = True

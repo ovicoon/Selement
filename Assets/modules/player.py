@@ -133,6 +133,9 @@ class Player:
         self.collider: utility.Collider = utility.Collider(
             self.x, self.y, DEFAULT_COLLIDER_RADIUS
         )
+        self.fast_collider: utility.FastCollider = utility.FastCollider(
+            self.x, self.y, DEFAULT_COLLIDER_RADIUS
+        )
 
         # 원소(자원) 관련
         self.element_charge_speed: float = 5
@@ -228,7 +231,10 @@ class Player:
         """
         attack_to_remove: List[Any] = []
         for attack in list(world.mob_attack):
-            collided = attack.collider.collide(self.collider)
+            if type(attack.collider) == utility.Collider:
+                collided = attack.collider.collide(self.collider)
+            elif type(attack.collider) == utility.FastCollider:
+                collided = attack.collider.collide(self.fast_collider)
 
             if collided:
                 if hasattr(attack, "timer"):
