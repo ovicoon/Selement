@@ -129,7 +129,6 @@ class Game:
         self.hp_bar_surface: Optional[pygame.Surface] = None
 
         # 이전 프레임 상태 트래킹 변수들
-        self.last_hp: float = 0.0
         self.last_player_biome: Optional[biome.Biome] = None
         self.last_player_ended: bool = False
 
@@ -449,20 +448,8 @@ class Game:
         self.player_element_charge_timer = utility.TimeKeeper(duration=0)
 
         # 이전 프레임 데이터 초기화
-        self.last_hp = self.game_world.player.hp
         self.last_player_biome = None
         self.last_player_ended = self.game_world.player.ended
-
-        # HP 바 초기화 (비율에 따라 스케일)
-        self.hp_bar_surface = pygame.transform.scale(
-            assets.Image.hp_bar,
-            (
-                HP_BAR_MAX_LENGTH
-                * self.game_world.player.hp
-                / self.game_world.player.max_hp,
-                HP_BAR_HEIGHT,
-            ),
-        )
 
         # 플레이 씬으로 전환 및 초기 대사 설정
         self.set_scene(self.play_scene)
@@ -603,31 +590,6 @@ class Game:
                     1600, 924, assets.Image.attack_select, center_pivot=False
                 )
             )
-
-        # HP 프레임과 바 표시
-        hp_frame = utility.OverLaySurface(0, 0, assets.Image.hp_frame)
-        hp_frame.rect.midright = (1910, 100)
-        self.play_scene.ui.append(hp_frame)
-
-        # 플레이어 HP가 변경될 때만 HP 바를 리스케일
-        if self.last_hp != self.game_world.player.hp:
-            self.hp_bar_surface = pygame.transform.scale(
-                assets.Image.hp_bar,
-                (
-                    HP_BAR_MAX_LENGTH
-                    * self.game_world.player.hp
-                    / self.game_world.player.max_hp,
-                    HP_BAR_HEIGHT,
-                ),
-            )
-
-        if self.hp_bar_surface:
-            hp_bar = utility.OverLaySurface(0, 0, self.hp_bar_surface)
-            hp_bar.rect.midright = (1900, 100)
-            self.play_scene.ui.append(hp_bar)
-
-        # 이전 프레임 HP 저장
-        self.last_hp = self.game_world.player.hp
 
         # 대사/스토리 처리
         self.story()

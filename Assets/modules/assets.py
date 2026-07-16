@@ -101,8 +101,6 @@ class Image:
     zero_dragon_logo: Optional[pygame.Surface] = None
     icon: Optional[pygame.Surface] = None
     player_view: Optional[pygame.Surface] = None
-    hp_bar: Optional[pygame.Surface] = None
-    hp_frame: Optional[pygame.Surface] = None
 
     smog: Optional[pygame.Surface] = None
     hit_particle: Optional[pygame.Surface] = None
@@ -208,19 +206,19 @@ class Image:
 
         # 타일
         Image.dirt_tile = pygame.transform.scale(
-            pygame.image.load("Images/dirt_tile.png").convert_alpha(), TILE_SIZE
+            pygame.image.load("Images/dirt_tile.png").convert, TILE_SIZE
         )
         Image.fire_tile = pygame.transform.scale(
-            pygame.image.load("Images/fire_tile.png").convert_alpha(), TILE_SIZE
+            pygame.image.load("Images/fire_tile.png").convert, TILE_SIZE
         )
         Image.air_tile = pygame.transform.scale(
-            pygame.image.load("Images/air_tile.png").convert_alpha(), TILE_SIZE
+            pygame.image.load("Images/air_tile.png").convert, TILE_SIZE
         )
         Image.underwater_tile = pygame.transform.scale(
-            pygame.image.load("Images/underwater_tile.png").convert_alpha(), TILE_SIZE
+            pygame.image.load("Images/underwater_tile.png").convert, TILE_SIZE
         )
         Image.underwater_ground_tile = pygame.transform.scale(
-            pygame.image.load("Images/underwater_ground_tile.png").convert_alpha(),
+            pygame.image.load("Images/underwater_ground_tile.png").convert,
             TILE_SIZE,
         )
         Image.fifth_biome_tile = pygame.transform.scale(
@@ -249,8 +247,6 @@ class Image:
         Image.zero_dragon_logo = pygame.transform.scale(
             pygame.image.load("Images/Zero Dragon.png").convert_alpha(), (512, 512)
         )
-        Image.hp_frame = pygame.image.load("Images/hp_frame.png").convert_alpha()
-        Image.hp_bar = pygame.image.load("Images/hp_bar.png").convert_alpha()
 
         # 파티클
         Image.recovery_particle = pygame.transform.scale(
