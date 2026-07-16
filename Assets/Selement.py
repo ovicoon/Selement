@@ -843,6 +843,9 @@ class Game:
                 self.play_bgm()
                 self.show_ui()
 
+                self.post_processor.gray_intensity = 255 * (
+                    1 - (self.game_world.player.hp / self.game_world.player.max_hp)
+                )
                 # 바이옴 상태 저장
                 self.last_player_biome = self.player_biome
 
