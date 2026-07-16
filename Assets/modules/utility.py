@@ -88,6 +88,29 @@ class ColliderType(Enum):
     circle_collider = 1
 
 
+class NewCollider:
+    """원형 충돌 감지"""
+
+    def __init__(self, x: float, y: float, radius: float) -> None:
+        self.x: float = x
+        self.y: float = y
+        self.radius: float = radius
+
+    def collide(self, collider: "NewCollider") -> bool:
+        """
+        두 콜라이더가 충돌하는지 검사.
+        """
+        return (self.x - collider.x) ** 2 + (self.y - collider.y) ** 2 <= (
+            self.radius + collider.radius
+        ) ** 2
+
+    def update(self, x: float, y: float, radius: float) -> None:
+        """위치/반지름 갱신"""
+        self.x = x
+        self.y = y
+        self.radius = radius
+
+
 class Collider:
     """
     충돌 판정을 위한 래퍼 클래스

@@ -319,8 +319,8 @@ class Mob(Entity):
             if collide_info:
                 # 충돌 위치를 기준으로 파티클 발생
                 world.shooter.shoot(
-                    self.collider.rect.x + collide_info[0],
-                    self.collider.rect.y + collide_info[1],
+                    self.x,
+                    self.y,
                     (200, 500),
                     0.99,
                     0.5,
