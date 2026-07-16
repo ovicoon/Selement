@@ -706,6 +706,7 @@ class Game:
                     self.post_processor.darken_timer.is_finished()
                     and not self.last_darken_finished
                 ):
+                    self.post_processor.remove_all_effect()
                     self.set_scene(self.end_scene)
 
                     if not DEVELOP_MODE:

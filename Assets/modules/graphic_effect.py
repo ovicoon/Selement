@@ -191,14 +191,12 @@ class ScreenEffect:
     def __init__(self) -> None:
         self.effect_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.target_width, utility.Screen.target_height),
-            EFFECT_SURFACE_FLAGS,
         )
         self.dark_surface: Optional[pygame.Surface] = None
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
         self.gray_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.game_width, utility.Screen.game_height),
-            EFFECT_SURFACE_FLAGS,
         )
         self.gray_intensity: int = 255
 
@@ -234,9 +232,7 @@ class ScreenEffect:
             self.dark_surface.set_alpha(alpha)
             self.effect_surface.blit(self.dark_surface, (0, 0))
 
-            final_surface.blit(
-                self.dark_surface, (0, 0), special_flags=EFFECT_SURFACE_FLAGS
-            )
+            final_surface.blit(self.dark_surface, (0, 0))
 
         self.gray_surface.fill(
             (self.gray_intensity, self.gray_intensity, self.gray_intensity, 255)
