@@ -843,9 +843,20 @@ class Game:
                 self.play_bgm()
                 self.show_ui()
 
-                self.post_processor.gray_intensity = 255 * (
-                    1 - (self.game_world.player.hp / self.game_world.player.max_hp)
-                )
+                if self.game_world.player.alive:
+                    self.post_processor.gray_intensity = int(
+                        255
+                        * (
+                            1
+                            - (
+                                self.game_world.player.hp
+                                / self.game_world.player.max_hp
+                            )
+                        )
+                    )
+                else:
+                    self.post_processor.gray_intensity = 0
+
                 # 바이옴 상태 저장
                 self.last_player_biome = self.player_biome
 
