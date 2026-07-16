@@ -206,23 +206,23 @@ class Image:
 
         # 타일
         Image.dirt_tile = pygame.transform.scale(
-            pygame.image.load("Images/dirt_tile.png").convert, TILE_SIZE
+            pygame.image.load("Images/dirt_tile.png").convert(), TILE_SIZE
         )
         Image.fire_tile = pygame.transform.scale(
-            pygame.image.load("Images/fire_tile.png").convert, TILE_SIZE
+            pygame.image.load("Images/fire_tile.png").convert(), TILE_SIZE
         )
         Image.air_tile = pygame.transform.scale(
-            pygame.image.load("Images/air_tile.png").convert, TILE_SIZE
+            pygame.image.load("Images/air_tile.png").convert(), TILE_SIZE
         )
         Image.underwater_tile = pygame.transform.scale(
-            pygame.image.load("Images/underwater_tile.png").convert, TILE_SIZE
+            pygame.image.load("Images/underwater_tile.png").convert(), TILE_SIZE
         )
         Image.underwater_ground_tile = pygame.transform.scale(
-            pygame.image.load("Images/underwater_ground_tile.png").convert,
+            pygame.image.load("Images/underwater_ground_tile.png").convert(),
             TILE_SIZE,
         )
         Image.fifth_biome_tile = pygame.transform.scale(
-            pygame.image.load("Images/fifth_biome_tile.png").convert_alpha(), TILE_SIZE
+            pygame.image.load("Images/fifth_biome_tile.png").convert(), TILE_SIZE
         )
 
         # 몹 / 보스
