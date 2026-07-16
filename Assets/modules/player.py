@@ -364,6 +364,10 @@ class Player:
                     self.dirt = self.element_max
                 if self.air > self.element_max:
                     self.air = self.element_max
+        else:
+            self.element_charge_timer = utility.TimeKeeper(
+                duration=self.element_charge_speed
+            )
 
     # --------------------
     # 공격 타입 선택 (마우스 휠)
