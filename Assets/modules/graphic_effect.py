@@ -185,7 +185,6 @@ class ParticleShooter:
 class ScreenEffect:
     """
     전체 화면에 적용할 이펙트를 생성/관리합니다.
-    - 현재는 'darken' (서서히 어두워짐) 기능을 제공합니다.
     - get_effect()는 적용된 이펙트가 그려진 서피스를 반환합니다.
     """
 
@@ -197,6 +196,12 @@ class ScreenEffect:
         self.dark_surface: Optional[pygame.Surface] = None
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
+        self.gray_surface: pygame.Surface = pygame.Surface(
+            (utility.Screen.game_width, utility.Screen.game_height),
+            EFFECT_SURFACE_FLAGS,
+        )
+        self.gray_intensity: int = 255
+
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
         self.darken_timer = utility.TimeKeeper(duration=time)
@@ -205,12 +210,13 @@ class ScreenEffect:
         """적용된 모든 이펙트를 제거합니다."""
         self.dark_surface = None
         self.darken_timer = None
+        self.gray_intensity: int = 255
 
-    def get_effect(self) -> pygame.Surface:
+    def post_process(self, surface: pygame.Surface) -> pygame.Surface:
         """
-        현재 적용 중인 이펙트를 그려서 effect_surface를 반환합니다.
-        - darken 타이머가 설정되어 있으면 해당 비율만큼 dark_screen을 alpha로 블렌드합니다.
+        현재 적용 중인 이펙트를 받은 서피스에 그려서 effect_surface를 반환합니다.
         """
+        final_surface = surface
         # 투명 초기화
         self.effect_surface.fill((255, 255, 255, 0))
 
@@ -224,12 +230,20 @@ class ScreenEffect:
             alpha = max(ALPHA_MIN, min(ALPHA_MAX, alpha))
 
             # dark_screen 복사본을 만들고 alpha 적용
-            try:
-                self.dark_surface = assets.Image.dark_screen.copy()
-                self.dark_surface.set_alpha(alpha)
-                self.effect_surface.blit(self.dark_surface, (0, 0))
-            except Exception:
-                # 이미지 처리 실패 시 무시하고 빈 이펙트 반환
-                pass
+            self.dark_surface = assets.Image.dark_screen.copy()
+            self.dark_surface.set_alpha(alpha)
+            self.effect_surface.blit(self.dark_surface, (0, 0))
 
-        return self.effect_surface
+            final_surface.blit(
+                self.dark_surface, (0, 0), special_flags=EFFECT_SURFACE_FLAGS
+            )
+
+        self.gray_surface.fill(
+            (self.gray_intensity, self.gray_intensity, self.gray_intensity, 255)
+        )
+
+        final_surface.blit(
+            self.gray_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
+        )
+
+        return final_surface

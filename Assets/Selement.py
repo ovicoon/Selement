@@ -112,7 +112,7 @@ class Game:
 
         # 카메라 및 화면 이펙트
         self.cam: utility.Camera = utility.Camera(0, 0)
-        self.screen_effect: graphic_effect.ScreenEffect = graphic_effect.ScreenEffect()
+        self.post_processor: graphic_effect.ScreenEffect = graphic_effect.ScreenEffect()
         self.set_scene(self.intro_scene)
         self.title_scene_timer: utility.TimeKeeper = utility.TimeKeeper(
             duration=INTRO_SCENE_DURATION
@@ -697,12 +697,12 @@ class Game:
         # Selement 사용(엔딩 트리거) 처리
         if self.game_world.player.ended:
             if not self.last_player_ended:
-                self.screen_effect.darken(3)
+                self.post_processor.darken(3)
                 self.last_darken_finished = False
 
-            if self.screen_effect.darken_timer:
+            if self.post_processor.darken_timer:
                 if (
-                    self.screen_effect.darken_timer.is_finished()
+                    self.post_processor.darken_timer.is_finished()
                     and not self.last_darken_finished
                 ):
                     self.set_scene(self.end_scene)
@@ -768,9 +768,9 @@ class Game:
             self.last_line_completed = self.current_line.completed
             self.last_player_ended = self.game_world.player.ended
 
-            if self.screen_effect.darken_timer:
+            if self.post_processor.darken_timer:
                 self.last_darken_finished = (
-                    self.screen_effect.darken_timer.is_finished()
+                    self.post_processor.darken_timer.is_finished()
                 )
 
     # ----------------------
@@ -841,13 +841,6 @@ class Game:
                 self.play_bgm()
                 self.show_ui()
 
-                # 스크린 이펙트 렌더링
-                self.play_scene.ui.append(
-                    utility.OverLaySurface(
-                        0, 0, self.screen_effect.get_effect(), center_pivot=False
-                    )
-                )
-
                 # 바이옴 상태 저장
                 self.last_player_biome = self.player_biome
 
@@ -866,9 +859,13 @@ class Game:
                     self.active_scene, pygame_event, utility.Screen.game_width
                 )
 
+            processed_game_surface = self.post_processor.post_process(
+                utility.Screen.game_surface
+            )
+
             # 화면 그리기 (스케일 후 중앙에 blit)
             render_surface = pygame.transform.scale(
-                utility.Screen.game_surface,
+                processed_game_surface,
                 (utility.Screen.game_width, utility.Screen.game_height),
             )
             utility.Screen.screen.blit(
