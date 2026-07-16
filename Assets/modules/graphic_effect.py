@@ -185,7 +185,6 @@ class ParticleShooter:
 class ScreenEffect:
     """
     전체 화면에 적용할 이펙트를 생성/관리합니다.
-    - get_effect()는 적용된 이펙트가 그려진 서피스를 반환합니다.
     """
 
     def __init__(self) -> None:
@@ -198,7 +197,7 @@ class ScreenEffect:
         self.gray_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.game_width, utility.Screen.game_height),
         )
-        self.gray_intensity: int = 255
+        self.gray_intensity: int = 0
 
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
@@ -208,7 +207,7 @@ class ScreenEffect:
         """적용된 모든 이펙트를 제거합니다."""
         self.dark_surface = None
         self.darken_timer = None
-        self.gray_intensity: int = 255
+        self.gray_intensity: int = 0
 
     def post_process(self, surface: pygame.Surface) -> pygame.Surface:
         """
@@ -234,12 +233,10 @@ class ScreenEffect:
 
             final_surface.blit(self.dark_surface, (0, 0))
 
-        self.gray_surface.fill(
-            (self.gray_intensity, self.gray_intensity, self.gray_intensity, 255)
-        )
+        if self.gray_intensity > 0:
+            self.gray_surface = pygame.transform.grayscale(final_surface)
+            self.gray_surface.set_alpha(self.gray_intensity)
 
-        final_surface.blit(
-            self.gray_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT
-        )
+            final_surface.blit(self.gray_surface, (0, 0))
 
         return final_surface
