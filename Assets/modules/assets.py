@@ -117,7 +117,6 @@ class Image:
 
     dead_screen: Optional[pygame.Surface] = None
     dark_screen: Optional[pygame.Surface] = None
-    gray_screen: pygame.Surface | None = None
 
     circle: Optional[pygame.Surface] = None
 
@@ -289,9 +288,6 @@ class Image:
         )
         Image.dark_screen = pygame.transform.scale(
             pygame.image.load("Images/dark_screen.png").convert_alpha(), SCREEN_SIZE
-        )
-        Image.gray_screen = pygame.transform.scale(
-            pygame.image.load("Images/gray_screen.png").convert_alpha(), SCREEN_SIZE
         )
 
         # circle (collider 시각화 등)
