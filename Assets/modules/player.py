@@ -66,7 +66,7 @@ PLAYER_VIEW_IMAGE_SIZE: Tuple[int, int] = (3080, 3080)
 
 DEFAULT_COLLIDER_RADIUS: int = 32  # 플레이어 콜라이더 반지름
 
-PARTICLE_FREQUENCY: float = 0.1
+PARTICLE_FREQUENCY: float = 0
 
 
 # -----------------------

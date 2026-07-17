@@ -41,6 +41,8 @@ else:
 DEFAULT_COLLIDER_RADIUS: int = 32
 BOSS_MINION_OFFSET: int = 200
 
+BOSSSELF_PARTICLE_FREQUENCY: float = 0
+
 
 class Entity:
     """
@@ -501,6 +503,10 @@ class BossSelf(Mob):
             duration=random.uniform(1, 10)
         )
 
+        self.particle_timer: utility.TimeKeeper = utility.TimeKeeper(
+            duration=BOSSSELF_PARTICLE_FREQUENCY
+        )
+
     def update(self, world: Any, dt: float) -> None:
         # 보스가 시작 플래그가 켜져야 동작
         if self.start:
@@ -580,7 +586,7 @@ class BossSelf(Mob):
                         )
                     )
                 elif self.next_attack == BossSelfState.summon_minions:
-                    # 미니언 소환
+                    # 잔몹 소환
                     world.mob.append(Burster(self.x - BOSS_MINION_OFFSET, self.y))
                     world.mob.append(Biter(self.x + BOSS_MINION_OFFSET, self.y))
                     world.mob.append(Flutterer(self.x, self.y + BOSS_MINION_OFFSET))
@@ -588,9 +594,11 @@ class BossSelf(Mob):
 
         # 보스가 살아있을 때/죽었을 때 지속 파티클 처리
         if self.alive:
-            world.shooter.shoot(
-                self.x, self.y, (0, 100), 1, 1, assets.Image.boss_smog, 1
-            )
+            if self.alive and self.particle_timer.is_finished():
+                self.particle_timer.reset()
+                world.shooter.shoot(
+                    self.x, self.y, (0, 100), 1, 1, assets.Image.boss_smog, 1
+                )
         else:
             world.shooter.shoot(
                 self.x, self.y, (0, 1000), 1, 2, assets.Image.light, 500
