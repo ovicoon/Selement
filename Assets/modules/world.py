@@ -417,7 +417,7 @@ class Chunk:
         """청크 내부에 자연물/불꽃/산호 등 엔티티를 배치."""
         random.seed(f"SelementWorldSeed{self.world.seed}chunk{self.x}_{self.y}")
 
-        # 풀/해초
+        # 풀/산호
         for _ in range(8):
             if random.random() > 0.2:
                 ox = self.x + random.randint(
@@ -438,12 +438,26 @@ class Chunk:
                         entities.Entity(ox, oy, grass_img, grass_name, biome=ob)
                     )
                 elif ob == biome.Biome.water:
-                    # 해초는 애니메이션 프레임이므로 이미지 None
-                    self.entities.append(
-                        entities.Entity(ox, oy, None, "seaweed", biome=ob)
+                    ox = self.x + random.randint(
+                        -self.world.chunk_size // 2, self.world.chunk_size // 2
                     )
+                    oy = self.y + random.randint(
+                        -self.world.chunk_size // 2, self.world.chunk_size // 2
+                    )
+                    ob = self.world.get_tile_biome(ox, oy)
+                    if ob == biome.Biome.water:
+                        coral_img, coral_name = random.choice(
+                            [
+                                (assets.Image.red_coral_reef, "red_coral_reef"),
+                                (assets.Image.pink_coral_reef, "pink_coral_reef"),
+                                (assets.Image.yellow_coral_reef, "yellow_coral_reef"),
+                            ]
+                        )
+                        self.entities.append(
+                            entities.Entity(ox, oy, coral_img, coral_name, biome=ob)
+                        )
 
-        # 나무 & 불꽃 & 산호
+        # 나무 & 불꽃 & 해초
         for _ in range(32):
             # 나무
             if random.random() > 0.5:
@@ -496,15 +510,9 @@ class Chunk:
                 )
                 ob = self.world.get_tile_biome(ox, oy)
                 if ob == biome.Biome.water:
-                    coral_img, coral_name = random.choice(
-                        [
-                            (assets.Image.red_coral_reef, "red_coral_reef"),
-                            (assets.Image.pink_coral_reef, "pink_coral_reef"),
-                            (assets.Image.yellow_coral_reef, "yellow_coral_reef"),
-                        ]
-                    )
+                    # 해초는 애니메이션 프레임이므로 이미지 None
                     self.entities.append(
-                        entities.Entity(ox, oy, coral_img, coral_name, biome=ob)
+                        entities.Entity(ox, oy, None, "seaweed", biome=ob)
                     )
 
         # 포탈 (희박)
