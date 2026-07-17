@@ -278,9 +278,6 @@ class ScreenEffect:
         )
         self.texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
 
-        # 색상 뒤틀림 해결 (Pygame의 BGRA 채널을 OpenGL RGBA 표준에 강제로 맞춤)
-        self.texture.swizzle = "BGRA"
-
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
         self.darken_timer = utility.TimeKeeper(duration=time)
