@@ -236,9 +236,6 @@ class ScreenEffect:
         # 2. ModernGL 파이프라인 초기화
         self.ctx = moderngl.create_context()
 
-        # [수정] 에러가 발생하던 self.ctx.pixel_store()는 삭제했습니다.
-        # (ModernGL은 이 정렬을 아래 write() 호출 시 인자로 받습니다)
-
         # 셰이더 프로그램 컴파일
         self.program = self.ctx.program(
             vertex_shader=VERTEX_SHADER,
