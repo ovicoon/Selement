@@ -241,6 +241,9 @@ class World:
         """엔티티 버퍼(self.entities)를 구성."""
         self.entities.clear()
 
+        self.shooter.update(dt)
+        self.entities.extend(self.shooter.particles)
+
         # 몹 업데이트/필터
         dead_mobs: List[entities.Entity] = []
         for m in self.mob:
@@ -597,6 +600,8 @@ class Room(World):
 
     # Room 전용 엔티티 렌더 버퍼 구성
     def _render_entities_room(self, dt: float) -> None:
+        self.shooter.update(dt)
+        self.entities.extend(self.shooter.particles)
         # 몹
         dead_mobs: List[entities.Entity] = []
         for m in self.mob:

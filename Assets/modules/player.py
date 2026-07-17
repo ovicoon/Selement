@@ -217,8 +217,6 @@ class Player:
         if self.alive and self.particle_timer.is_finished():
             self.element_charge_timer.reset()
             world.shooter.shoot(self.x, self.y, (0, 100), 1, 1, assets.Image.smog, 1)
-        world.shooter.update(dt)
-        world.entities.extend(world.shooter.particles)
 
     # --------------------
     # 데미지 / HP 처리
