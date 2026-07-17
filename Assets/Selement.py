@@ -132,6 +132,7 @@ class Game:
         # 이전 프레임 상태 트래킹 변수들
         self.last_player_biome: Optional[biome.Biome] = None
         self.last_player_ended: bool = False
+        self.last_player_alive: bool = True
 
         # 보스/암전 관련 상태
         self.boss_alive: bool = False
@@ -595,33 +596,6 @@ class Game:
                 )
             )
 
-        # 게임 오버 처리
-        if self.game_world.player.alive == False:
-            self.play_scene.ui.append(
-                utility.OverLaySurface(
-                    0, 0, assets.Image.dead_screen, center_pivot=False
-                )
-            )
-            dead_text_surface = utility.str_to_surface(
-                self.lang.get(language.TextKey.GAME_OVER)[0],
-                assets.Font.big,
-                (255, 255, 255),
-            )
-            self.play_scene.ui.append(utility.OverLaySurface(0, 0, dead_text_surface))
-            self.play_scene.ui.append(
-                utility.Button(
-                    0,
-                    300,
-                    600,
-                    200,
-                    self.lang.get(language.TextKey.EXIT)[0],
-                    (255, 255, 255),
-                    (100, 100, 100),
-                    self.quit_game,
-                    assets.Font.medium,
-                )
-            )
-
     # ----------------------
     # 스토리 / 대사 처리
     # ----------------------
@@ -678,7 +652,7 @@ class Game:
             self.last_boss_alive = self.boss_alive
 
         # Selement 사용(엔딩 트리거) 처리
-        if self.game_world.player.ended:
+        if self.game_world.player.ended and self.game_world.player.alive:
             if not self.last_player_ended:
                 self.post_processor.darken(3)
                 self.last_darken_finished = False
@@ -723,6 +697,20 @@ class Game:
 
                     self.current_line.start()
 
+        # 게임 오버 처리
+        if self.game_world.player.alive == False and self.last_player_alive:
+            self.post_processor.darken(3)
+            self.last_darken_finished = False
+
+        if self.post_processor.darken_timer:
+            if (
+                self.post_processor.darken_timer.is_finished()
+                and not self.last_darken_finished
+            ):
+                self.post_processor.remove_all_effect()
+                self.set_scene(self.title_scene)
+                self.current_line = None
+
         # 활성 대사 추가 및 완료 후 후속 처리
         if self.current_line:
             if self.current_line.active:
@@ -751,6 +739,7 @@ class Game:
 
             self.last_line_completed = self.current_line.completed
             self.last_player_ended = self.game_world.player.ended
+            self.last_player_alive = self.game_world.player.alive
 
             if self.post_processor.darken_timer:
                 self.last_darken_finished = (
@@ -836,8 +825,6 @@ class Game:
                             )
                         )
                     )
-                else:
-                    self.post_processor.gray_intensity = 0
 
                 # 바이옴 상태 저장
                 self.last_player_biome = self.player_biome
