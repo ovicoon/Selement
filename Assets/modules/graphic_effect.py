@@ -224,6 +224,7 @@ class ScreenEffect:
     """
 
     def __init__(self) -> None:
+        # 1. 뼈대 서피스들 (CPU 사이드 유지)
         self.effect_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.target_width, utility.Screen.target_height)
         )
@@ -231,7 +232,12 @@ class ScreenEffect:
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
         self.gray_intensity: int = 0
+
+        # 2. ModernGL 파이프라인 초기화
         self.ctx = moderngl.create_context()
+
+        # [수정] 에러가 발생하던 self.ctx.pixel_store()는 삭제했습니다.
+        # (ModernGL은 이 정렬을 아래 write() 호출 시 인자로 받습니다)
 
         # 셰이더 프로그램 컴파일
         self.program = self.ctx.program(
@@ -272,6 +278,7 @@ class ScreenEffect:
         )
         self.texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
 
+        # 색상 뒤틀림 해결 (Pygame의 BGRA 채널을 OpenGL RGBA 표준에 강제로 맞춤)
         self.texture.swizzle = "BGRA"
 
     def darken(self, time: float) -> None:
@@ -286,12 +293,12 @@ class ScreenEffect:
 
     def post_process(self, surface: pygame.Surface) -> None:
         """
-        인자로 받은 게임 화면 서피스(surface)에 이펙트를 처리하고,
-        GPU를 거쳐 최종 진짜 디스플레이(OpenGL 윈도우)에 바로 그려버립니다.
+        인자로 받은 게임 화면 서피스를 GPU로 업로드한 뒤,
+        스케일링 및 셰이더 연산을 거쳐 진짜 화면(screen)의 중앙 위치에 직접 렌더링합니다.
         """
         final_surface = surface
 
-        # 1. Darken 효과 (기존 CPU 블릿 방식 적용)
+        # 1. Darken 효과 (기존 CPU 블릿 방식 유지)
         if self.darken_timer:
             duration = getattr(self.darken_timer, "duration", 0) or 1
             elapsed = self.darken_timer.elapsed_time()
@@ -301,24 +308,35 @@ class ScreenEffect:
 
             self.dark_surface = assets.Image.dark_screen.copy()
             self.dark_surface.set_alpha(alpha)
-
-            # 최종 완성본 서피스에 암전 블릿
             final_surface.blit(self.dark_surface, (0, 0))
 
-        # 2. ModernGL 포스트 프로세싱 및 최종 디스플레이 렌더링
-        # 게임이 그려진 최종 서피스의 픽셀 뷰를 통째로 가져와 GPU 텍스처로 전송
-        texture_data = pygame.image.tobytes(final_surface, "RGBA")
-        self.texture.write(texture_data)
+        # 2. ModernGL 렌더링 영역 설정 (중앙 정렬 좌표 적용)
+        real_screen_height = utility.Screen.target_height
+        opengl_y = real_screen_height - (
+            utility.Screen.center_y + utility.Screen.game_height
+        )
 
-        # OpenGL 백버퍼(진짜 화면이 그려질 임시 공간) 클리어
+        self.ctx.viewport = (
+            utility.Screen.center_x,
+            opengl_y,
+            utility.Screen.game_width,
+            utility.Screen.game_height,
+        )
+
+        # 3. GPU 텍스처 업로드 및 렌더링
+        texture_data = pygame.image.tobytes(final_surface, "RGBA")
+
+        # [수정] 텍스처를 쓸 때 1바이트 정렬 규칙인 alignment=1 옵션을 명시적으로 부여합니다.
+        # 이 옵션이 줄 밀림과 화면 찢어짐을 깔끔하게 차단해 줍니다.
+        self.texture.write(texture_data, alignment=1)
+
+        # 배경을 검은색으로 클리어 (레터박스 영역 확보)
         self.ctx.clear(0, 0, 0, 1)
 
-        # 그레이스케일 강도 계산 (0~255 -> 0.0~1.0 변환)
+        # 그레이스케일 강도 계산 (0 ~ 255 -> 0.0 ~ 1.0)
         intensity_normalized = float(self.gray_intensity) / 255.0
         self.program["gray_intensity"].value = intensity_normalized
 
-        # 텍스처 유포 및 셰이더 적용하여 진짜 디스플레이 백버퍼에 그리기
+        # 렌더링 실행
         self.texture.use(0)
         self.vao.render(moderngl.TRIANGLE_STRIP)
-
-        # [주의] 이 작업이 끝나면 호출측(메인 루프)에서 pygame.display.flip()만 해주면 끝납니다!
