@@ -228,16 +228,9 @@ class ScreenEffect:
                 rect_x = random.randint(0, screen_width - rect_width)
                 rect_y = random.randint(0, screen_height - rect_height)
 
-                # [랜덤 색상 설정] - 아예 무작위 색상으로 하면 진짜 기괴해집니다.
-                random_color = (
-                    random.randint(0, 255),
-                    random.randint(0, 255),
-                    random.randint(0, 255),
-                )
-
                 pygame.draw.rect(
                     final_surface,
-                    random_color,
+                    (255, 255, 255),
                     (rect_x, rect_y, rect_width, rect_height),
                 )
 
