@@ -208,6 +208,7 @@ class Player:
 
         # 사망 처리
         if self.hp <= 0:
+            self.velocity = 0
             self._game_over()
 
         # 월드와의 상호작용 (포탈/셀레먼트)
