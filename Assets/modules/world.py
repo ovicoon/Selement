@@ -273,14 +273,6 @@ class World:
                     e.image = seaweed_frame
                 self._append_visible_entity(e)
 
-        # 플레이어 파티클
-        if self.player.alive:
-            self.shooter.shoot(
-                self.player.x, self.player.y, (0, 100), 1, 1, assets.Image.smog, 1
-            )
-        self.shooter.update(dt)
-        self.entities.extend(self.shooter.particles)
-
         # 몹 투사체
         self._update_projectiles(self.mob_attack, dt)
 
@@ -605,14 +597,6 @@ class Room(World):
 
     # Room 전용 엔티티 렌더 버퍼 구성
     def _render_entities_room(self, dt: float) -> None:
-        # 플레이어 파티클
-        if self.player.alive:
-            self.shooter.shoot(
-                self.player.x, self.player.y, (0, 100), 1, 1, assets.Image.smog, 1
-            )
-        self.shooter.update(dt)
-        self.entities.extend(self.shooter.particles)
-
         # 몹
         dead_mobs: List[entities.Entity] = []
         for m in self.mob:

@@ -205,6 +205,12 @@ class Player:
         # 월드와의 상호작용 (포탈/셀레먼트)
         self._interact(world)
 
+        # 플레이어 파티클
+        if self.alive:
+            world.shooter.shoot(self.x, self.y, (0, 100), 1, 1, assets.Image.smog, 1)
+        world.shooter.update(dt)
+        world.entities.extend(world.shooter.particles)
+
     # --------------------
     # 데미지 / HP 처리
     # --------------------
