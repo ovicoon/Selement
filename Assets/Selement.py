@@ -812,19 +812,13 @@ class Game:
 
                 # BGM 및 UI 업데이트
                 self.play_bgm()
-                self.show_ui()
 
-                if self.game_world.player.alive:
-                    self.post_processor.gray_intensity = int(
-                        255
-                        * (
-                            1
-                            - (
-                                self.game_world.player.hp
-                                / self.game_world.player.max_hp
-                            )
-                        )
-                    )
+                self.post_processor.gray_intensity = int(
+                    255
+                    * (1 - (self.game_world.player.hp / self.game_world.player.max_hp))
+                )
+
+                self.show_ui()
 
                 # 바이옴 상태 저장
                 self.last_player_biome = self.player_biome

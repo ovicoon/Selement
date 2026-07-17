@@ -207,13 +207,19 @@ class ScreenEffect:
         """적용된 모든 이펙트를 제거합니다."""
         self.dark_surface = None
         self.darken_timer = None
-        self.gray_intensity: int = 0
+        self.gray_intensity = 0
 
     def post_process(self, surface: pygame.Surface) -> pygame.Surface:
         """
         현재 적용 중인 이펙트를 받은 서피스에 그려서 effect_surface를 반환합니다.
         """
         final_surface = surface
+
+        if self.gray_intensity > 0:
+            self.gray_surface.fill((180, 180, 180))
+            self.gray_surface.set_alpha(self.gray_intensity)
+            final_surface.blit(self.gray_surface, (0, 0))
+
         # 투명 초기화
         self.effect_surface.fill((255, 255, 255, 0))
 
@@ -232,11 +238,5 @@ class ScreenEffect:
             self.effect_surface.blit(self.dark_surface, (0, 0))
 
             final_surface.blit(self.dark_surface, (0, 0))
-
-        if self.gray_intensity > 0:
-            self.gray_surface = pygame.transform.grayscale(final_surface)
-            self.gray_surface.set_alpha(self.gray_intensity)
-
-            final_surface.blit(self.gray_surface, (0, 0))
 
         return final_surface
