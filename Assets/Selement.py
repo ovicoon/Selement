@@ -852,13 +852,7 @@ class Game:
             )
 
             # 화면 그리기 (스케일 후 중앙에 blit)
-            render_surface = pygame.transform.scale(
-                processed_game_surface,
-                (utility.Screen.game_width, utility.Screen.game_height),
-            )
-            utility.Screen.screen.blit(
-                render_surface, (utility.Screen.center_x, utility.Screen.center_y)
-            )
+            self.post_processor.post_process(utility.Screen.game_surface)
             pygame.display.flip()
 
         # 정리

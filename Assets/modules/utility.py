@@ -218,7 +218,7 @@ class Screen:
 
         Screen.screen = pygame.display.set_mode(
             (Screen.screen_width, Screen.screen_height),
-            pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF,
+            pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.OPENGL,
         )
         Screen.center_x = (Screen.screen_width - Screen.game_width) / 2
         Screen.center_y = (Screen.screen_height - Screen.game_height) / 2

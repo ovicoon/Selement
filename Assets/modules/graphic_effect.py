@@ -20,9 +20,11 @@
 """
 
 import sys
+import array
 from tkinter import messagebox
 import pygame
 import random
+import moderngl
 from typing import List, Optional, Tuple
 
 # 파일 직접 실행 방지
@@ -44,6 +46,39 @@ DEFAULT_PARTICLE_ANGLE_RANGE: Tuple[float, float] = (0.0, 360.0)
 EFFECT_SURFACE_FLAGS = pygame.HWSURFACE | pygame.DOUBLEBUF | pygame.SRCALPHA
 ALPHA_MIN: int = 0
 ALPHA_MAX: int = 255
+
+# ----------------- GLSL Shader Sources -----------------
+VERTEX_SHADER = """
+#version 330
+in vec2 in_vert;
+in vec2 in_texcoord;
+out vec2 v_texcoord;
+void main() {
+    // Pygame 서피스 -> OpenGL 텍스처 업로드 시 발생하는 상하 반전을 셰이더에서 해결
+    gl_Position = vec4(in_vert, 0.0, 1.0);
+    v_texcoord = vec2(in_texcoord.x, 1.0 - in_texcoord.y);
+}
+"""
+
+FRAGMENT_SHADER = """
+#version 330
+uniform sampler2D Texture;
+uniform float gray_intensity; // 0.0 ~ 1.0
+
+in vec2 v_texcoord;
+out vec4 f_color;
+
+void main() {
+    vec4 color = texture(Texture, v_texcoord);
+    
+    // 표준 그레이스케일 공식
+    float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    
+    // gray_intensity 만큼 원본과 그레이스케일을 보간(mix)
+    vec3 final_color = mix(color.rgb, vec3(gray), gray_intensity);
+    f_color = vec4(final_color, color.a);
+}
+"""
 
 
 class Particle:
@@ -185,19 +220,59 @@ class ParticleShooter:
 class ScreenEffect:
     """
     전체 화면에 적용할 이펙트를 생성/관리합니다.
+    GPU(ModernGL)를 활용하여 실시간 포스트 프로세싱 후 진짜 디스플레이에 출력합니다.
     """
 
     def __init__(self) -> None:
         self.effect_surface: pygame.Surface = pygame.Surface(
-            (utility.Screen.target_width, utility.Screen.target_height),
+            (utility.Screen.target_width, utility.Screen.target_height)
         )
         self.dark_surface: Optional[pygame.Surface] = None
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
-        self.gray_surface: pygame.Surface = pygame.Surface(
-            (utility.Screen.game_width, utility.Screen.game_height),
-        )
         self.gray_intensity: int = 0
+        self.ctx = moderngl.create_context()
+
+        # 셰이더 프로그램 컴파일
+        self.program = self.ctx.program(
+            vertex_shader=VERTEX_SHADER,
+            fragment_shader=FRAGMENT_SHADER,
+        )
+
+        # 화면 좌표계 설정 (-1.0 ~ 1.0 범위로 꽉 차게 그리기)
+        vertices = array.array(
+            "f",
+            [
+                -1.0,
+                1.0,
+                0.0,
+                1.0,  # 좌상
+                -1.0,
+                -1.0,
+                0.0,
+                0.0,  # 좌하
+                1.0,
+                1.0,
+                1.0,
+                1.0,  # 우상
+                1.0,
+                -1.0,
+                1.0,
+                0.0,  # 우하
+            ],
+        )
+        self.vbo = self.ctx.buffer(vertices)
+        self.vao = self.ctx.simple_vertex_array(
+            self.program, self.vbo, "in_vert", "in_texcoord"
+        )
+
+        # 진짜 디스플레이 해상도(target_width/height)에 맞춰 텍스처 버퍼 생성
+        self.texture = self.ctx.texture(
+            (utility.Screen.target_width, utility.Screen.target_height), 4
+        )
+        self.texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+
+        self.texture.swizzle = "BGRA"
 
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
@@ -207,36 +282,43 @@ class ScreenEffect:
         """적용된 모든 이펙트를 제거합니다."""
         self.dark_surface = None
         self.darken_timer = None
-        self.gray_intensity: int = 0
+        self.gray_intensity = 0
 
-    def post_process(self, surface: pygame.Surface) -> pygame.Surface:
+    def post_process(self, surface: pygame.Surface) -> None:
         """
-        현재 적용 중인 이펙트를 받은 서피스에 그려서 effect_surface를 반환합니다.
+        인자로 받은 게임 화면 서피스(surface)에 이펙트를 처리하고,
+        GPU를 거쳐 최종 진짜 디스플레이(OpenGL 윈도우)에 바로 그려버립니다.
         """
         final_surface = surface
-        # 투명 초기화
-        self.effect_surface.fill((255, 255, 255, 0))
 
+        # 1. Darken 효과 (기존 CPU 블릿 방식 적용)
         if self.darken_timer:
-            # duration 0 방지
             duration = getattr(self.darken_timer, "duration", 0) or 1
             elapsed = self.darken_timer.elapsed_time()
-            # 비율 계산 후 0..1 범위로 클램프
             ratio = max(0.0, min(1.0, elapsed / duration))
             alpha = int(ALPHA_MAX * ratio)
             alpha = max(ALPHA_MIN, min(ALPHA_MAX, alpha))
 
-            # dark_screen 복사본을 만들고 alpha 적용
             self.dark_surface = assets.Image.dark_screen.copy()
             self.dark_surface.set_alpha(alpha)
-            self.effect_surface.blit(self.dark_surface, (0, 0))
 
+            # 최종 완성본 서피스에 암전 블릿
             final_surface.blit(self.dark_surface, (0, 0))
 
-        if self.gray_intensity > 0:
-            self.gray_surface = pygame.transform.grayscale(final_surface)
-            self.gray_surface.set_alpha(self.gray_intensity)
+        # 2. ModernGL 포스트 프로세싱 및 최종 디스플레이 렌더링
+        # 게임이 그려진 최종 서피스의 픽셀 뷰를 통째로 가져와 GPU 텍스처로 전송
+        texture_data = pygame.image.tobytes(final_surface, "RGBA")
+        self.texture.write(texture_data)
 
-            final_surface.blit(self.gray_surface, (0, 0))
+        # OpenGL 백버퍼(진짜 화면이 그려질 임시 공간) 클리어
+        self.ctx.clear(0, 0, 0, 1)
 
-        return final_surface
+        # 그레이스케일 강도 계산 (0~255 -> 0.0~1.0 변환)
+        intensity_normalized = float(self.gray_intensity) / 255.0
+        self.program["gray_intensity"].value = intensity_normalized
+
+        # 텍스처 유포 및 셰이더 적용하여 진짜 디스플레이 백버퍼에 그리기
+        self.texture.use(0)
+        self.vao.render(moderngl.TRIANGLE_STRIP)
+
+        # [주의] 이 작업이 끝나면 호출측(메인 루프)에서 pygame.display.flip()만 해주면 끝납니다!
