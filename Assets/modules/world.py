@@ -418,7 +418,7 @@ class Chunk:
         random.seed(f"SelementWorldSeed{self.world.seed}chunk{self.x}_{self.y}")
 
         # 풀/해초
-        for _ in range(self.world.tile_size):
+        for _ in range(8):
             if random.random() > 0.2:
                 ox = self.x + random.randint(
                     -self.world.chunk_size // 2, self.world.chunk_size // 2
