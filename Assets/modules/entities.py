@@ -459,9 +459,10 @@ class Plower(Mob):
                     self.y,
                     "plower_shock_wave",
                     700,
-                    assets.Image.shock_wave,
+                    (255, 255, 0),
                     1,
                     800,
+                    world,
                 )
             )
 
@@ -572,9 +573,10 @@ class BossSelf(Mob):
                             self.y,
                             "boss_self wave",
                             1000,
-                            assets.Image.boss_wave,
+                            (0, 255, 182),
                             2,
                             500,
+                            world,
                         )
                     )
                 elif self.next_attack == BossSelfState.summon_minions:
@@ -595,7 +597,7 @@ class BossSelf(Mob):
             )
 
 
-class ShockWave(Entity):
+class ShockWave:
     """
     충격파: 반지름이 증가하는 범위형 공격
     FastCollider 사용
@@ -607,21 +609,23 @@ class ShockWave(Entity):
         y: float,
         name: str,
         vel: float,
-        image: pygame.Surface,
+        color: Tuple[int, int, int],
         damage: float,
         wave_max_distance: float,
+        game_world: Any,
+        thinkness: int = 10,
     ) -> None:
-        super().__init__(x, y, image, name, center_pivot=True, do_not_arrange=True)
+        self.x = x
+        self.y = y
+        self.biome = game_world.get_tile_biome(x, y)
+        self.name = name
+        self.color = color
+        self.thickness = thinkness
 
-        self.origin_image: pygame.Surface = image
         self.vel: float = vel
         self.damage: float = damage
         self.wave_distance: float = 0.0
         self.wave_max_distance: float = wave_max_distance
-
-        # 초기 이미지: 크기가 1 이상인 정수로 안전하게 설정
-        init_size: int = max(1, int(self.wave_distance * 2))
-        self.image = pygame.transform.scale(self.origin_image, (init_size, init_size))
 
         self.collider: utility.FastCollider = utility.FastCollider(self.x, self.y, 0)
         self.attack_speed: float = 0.1
@@ -633,11 +637,32 @@ class ShockWave(Entity):
         self.wave_distance += self.vel * dt
         if self.wave_distance >= self.wave_max_distance:
             self.alive = False
-
-        size: int = max(1, int(self.wave_distance * 2))
-        self.image = pygame.transform.scale(self.origin_image, (size, size))
-
         self.collider.update(self.x, self.y, self.wave_distance)
+
+    def render(
+        self,
+        surface: pygame.Surface,
+        camera_x: float,
+        camera_y: float,
+    ) -> None:
+        """카메라 상대 좌표를 계산하여 화면에 원을 직접 그립니다."""
+        render_coord = (
+            utility.Screen.target_width / 2 + self.x - camera_x,
+            utility.Screen.target_height / 2 + self.y - camera_y,
+        )
+
+        thickness = max(
+            1,
+            int(self.thickness * (1.0 - (self.wave_distance / self.wave_max_distance))),
+        )
+
+        pygame.draw.circle(
+            surface,
+            self.color,
+            (render_coord[0], render_coord[1]),
+            int(self.wave_distance),
+            thickness,
+        )
 
 
 class Projectile(Entity):

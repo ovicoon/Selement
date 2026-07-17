@@ -41,6 +41,7 @@ if __name__ == "__main__":
 else:
     from . import assets
     from . import language
+    from . import entities
 
 
 # -----------------------
@@ -306,7 +307,9 @@ class Camera:
 
         collider_visuals = []
         # 일괄 렌더링을 위한 blit 큐 생성
-        blit_queue: List[Tuple[Any, Tuple[float, float]]] = []
+        tile_queue: List[Tuple[Any, Tuple[float, float]]] = []
+        entity_queue: list[tuple[Any, tuple[float, float]]] = []
+        shock_wave: list[entities.ShockWave] = []
 
         # 더 효율적으로 보이는부분만 컬링하기 위함
         viewport_rect = pygame.Rect(0, 0, view * 2, view * 2)
@@ -348,6 +351,10 @@ class Camera:
                 elif getattr(entity, "do_not_arrange", False):
                     self.on_ground.append((render_coord, entity))
 
+            else:
+                if type(entity) == entities.ShockWave:
+                    shock_wave.append(entity)
+
             # 디버그용 콜라이더 시각화 대상 수집
             if render_collider:
                 if hasattr(entity, "collider"):
@@ -365,20 +372,27 @@ class Camera:
             )
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
             if tile_rect.colliderect(viewport_rect):
-                blit_queue.append((tile.image, render_coord))
+                tile_queue.append((tile.image, render_coord))
+
+        if tile_queue:
+            Screen.game_surface.blits(tile_queue)
+
+        if shock_wave:
+            for wave in shock_wave:
+                wave.render(Screen.game_surface, self.x, self.y)
 
         # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
         for entity in self.on_ground:
-            blit_queue.append((entity[1].image, entity[0]))
+            tile_queue.append((entity[1].image, entity[0]))
 
         # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐) - blit 큐에 추가
         rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
         for obj in rendering_order:
-            blit_queue.append((obj[1].image, obj[0]))
+            entity_queue.append((obj[1].image, obj[0]))
 
         # 모아둔 월드 엔티티들을 한번에 blits로 그리기
-        if blit_queue:
-            Screen.game_surface.blits(blit_queue)
+        if entity_queue:
+            Screen.game_surface.blits(entity_queue)
 
         # 콜라이더 렌더(디버그)
         for col in collider_visuals:
