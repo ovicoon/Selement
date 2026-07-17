@@ -215,7 +215,7 @@ class Player:
 
         # 플레이어 파티클
         if self.alive and self.particle_timer.is_finished():
-            self.element_charge_timer.reset()
+            self.particle_timer.reset()
             world.shooter.shoot(self.x, self.y, (0, 100), 1, 1, assets.Image.smog, 1)
 
     # --------------------
