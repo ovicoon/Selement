@@ -813,9 +813,8 @@ class Game:
                 # BGM 및 UI 업데이트
                 self.play_bgm()
 
-                self.post_processor.gray_intensity = int(
-                    255
-                    * (1 - (self.game_world.player.hp / self.game_world.player.max_hp))
+                self.post_processor.grain_intensity = 1 - (
+                    self.game_world.player.hp / self.game_world.player.max_hp
                 )
 
                 self.show_ui()

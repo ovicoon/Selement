@@ -197,7 +197,7 @@ class ScreenEffect:
         self.gray_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.game_width, utility.Screen.game_height),
         )
-        self.gray_intensity: int = 0
+        self.grain_intensity: float = 0
 
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
@@ -207,7 +207,7 @@ class ScreenEffect:
         """적용된 모든 이펙트를 제거합니다."""
         self.dark_surface = None
         self.darken_timer = None
-        self.gray_intensity = 0
+        self.grain_intensity = 0
 
     def post_process(self, surface: pygame.Surface) -> pygame.Surface:
         """
@@ -215,10 +215,31 @@ class ScreenEffect:
         """
         final_surface = surface
 
-        if self.gray_intensity > 0:
-            self.gray_surface.fill((180, 180, 180))
-            self.gray_surface.set_alpha(self.gray_intensity)
-            final_surface.blit(self.gray_surface, (0, 0))
+        if self.grain_intensity > 0:
+            if random.random() < self.grain_intensity:
+                screen_width, screen_height = (
+                    utility.Screen.game_width,
+                    utility.Screen.game_height,
+                )
+
+                # [랜덤 위치 및 크기 설정]
+                rect_width = random.randint(10, 150)  # 사각형 가로 크기 (10~150 픽셀)
+                rect_height = random.randint(10, 150)  # 사각형 세로 크기 (10~150 픽셀)
+                rect_x = random.randint(0, screen_width - rect_width)
+                rect_y = random.randint(0, screen_height - rect_height)
+
+                # [랜덤 색상 설정] - 아예 무작위 색상으로 하면 진짜 기괴해집니다.
+                random_color = (
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                    random.randint(0, 255),
+                )
+
+                pygame.draw.rect(
+                    final_surface,
+                    random_color,
+                    (rect_x, rect_y, rect_width, rect_height),
+                )
 
         # 투명 초기화
         self.effect_surface.fill((255, 255, 255, 0))
