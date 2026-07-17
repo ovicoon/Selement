@@ -483,21 +483,13 @@ class Game:
         x_icon: int,
         y_icon: int,
         icon_surface: pygame.Surface,
-        x_text: int,
-        y_text: int,
-        text_str: str,
+        quantity: int,
     ) -> None:
         """원소 아이콘과 해당 수량 텍스트를 play_scene.ui에 추가하는 헬퍼"""
+        copied = icon_surface.copy()
+        copied.set_alpha(int(255 * (quantity / self.game_world.player.element_max)))
         self.play_scene.ui.append(
-            utility.OverLaySurface(x_icon, y_icon, icon_surface, center_pivot=False)
-        )
-        self.play_scene.ui.append(
-            utility.OverLaySurface(
-                x_text,
-                y_text,
-                utility.str_to_surface(text_str, assets.Font.small, (255, 255, 255)),
-                center_pivot=False,
-            )
+            utility.OverLaySurface(x_icon, y_icon, copied, center_pivot=False)
         )
 
     def show_ui(self) -> None:
@@ -519,33 +511,25 @@ class Game:
             1600,
             412,
             assets.Image.fire_icon,
-            1750,
-            512,
-            f"{self.game_world.player.fire}",
+            self.game_world.player.fire,
         )
         self._append_element_ui(
             1600,
             540,
             assets.Image.water_icon,
-            1750,
-            640,
-            f"{self.game_world.player.water}",
+            self.game_world.player.water,
         )
         self._append_element_ui(
             1600,
             668,
             assets.Image.dirt_icon,
-            1750,
-            768,
-            f"{self.game_world.player.dirt}",
+            self.game_world.player.dirt,
         )
         self._append_element_ui(
             1600,
             796,
             assets.Image.air_icon,
-            1750,
-            896,
-            f"{self.game_world.player.air}",
+            self.game_world.player.air,
         )
 
         # Selement는 존재할 때만 추가
@@ -554,9 +538,7 @@ class Game:
                 1600,
                 924,
                 assets.Image.selement_icon,
-                1750,
-                1024,
-                f"{self.game_world.player.selement}",
+                100,
             )
 
         # 선택된 공격 타입에 따른 선택 아이콘 표시

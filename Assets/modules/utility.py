@@ -374,16 +374,16 @@ class Camera:
             if tile_rect.colliderect(viewport_rect):
                 tile_queue.append((tile.image, render_coord))
 
+        # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
+        for entity in self.on_ground:
+            tile_queue.append((entity[1].image, entity[0]))
+
         if tile_queue:
             Screen.game_surface.blits(tile_queue)
 
         if shock_wave:
             for wave in shock_wave:
                 wave.render(Screen.game_surface, self.x, self.y)
-
-        # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
-        for entity in self.on_ground:
-            tile_queue.append((entity[1].image, entity[0]))
 
         # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐) - blit 큐에 추가
         rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
