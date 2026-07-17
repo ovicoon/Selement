@@ -55,6 +55,8 @@ INVINCIBLE_AVOID_DURATION: float = 2
 SPEED_UP_DURATION: float = 10
 SPEED_UP_FACTOR: float = 2
 
+ELEMENT_CHARGE_SPEED: float = 1
+
 LEAD_OF_WIND_DURATION: float = 10
 LEAD_OF_WIND_SPEED: float = 200
 
@@ -63,6 +65,8 @@ DECREASED_PLAYER_VIEW: int = 400
 PLAYER_VIEW_IMAGE_SIZE: Tuple[int, int] = (3080, 3080)
 
 DEFAULT_COLLIDER_RADIUS: int = 32  # 플레이어 콜라이더 반지름
+
+PARTICLE_FREQUENCY: float = 0.1
 
 
 # -----------------------
@@ -138,7 +142,7 @@ class Player:
         )
 
         # 원소(자원) 관련
-        self.element_charge_speed: float = 5
+        self.element_charge_speed: float = ELEMENT_CHARGE_SPEED
         self.element_max: int = 100
         self.element_charge_timer: utility.TimeKeeper = utility.TimeKeeper(
             duration=self.element_charge_speed
@@ -157,6 +161,10 @@ class Player:
 
         # 내부: 현재 바이옴 (업데이트 시 설정)
         self.player_biome: Optional[biome.Biome] = None
+
+        self.particle_timer: utility.TimeKeeper = utility.TimeKeeper(
+            duration=PARTICLE_FREQUENCY
+        )
 
     # --------------------
     # 프레임 업데이트 엔트리
@@ -206,7 +214,8 @@ class Player:
         self._interact(world)
 
         # 플레이어 파티클
-        if self.alive:
+        if self.alive and self.particle_timer.is_finished():
+            self.element_charge_timer.reset()
             world.shooter.shoot(self.x, self.y, (0, 100), 1, 1, assets.Image.smog, 1)
         world.shooter.update(dt)
         world.entities.extend(world.shooter.particles)
