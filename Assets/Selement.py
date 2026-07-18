@@ -459,6 +459,18 @@ class Game:
             )
         )
 
+        self.play_scene.ui.append(
+            utility.OverLaySurface(
+                0,
+                -400,
+                utility.str_to_surface(
+                    self.lang.get(language.TextKey.TUTORIAL)[0],
+                    assets.Font.medium,
+                    (255, 255, 255),
+                ),
+            )
+        )
+
         # 원소들 렌더링(아이콘 위치와 텍스트 위치를 헬퍼로 추가)
         self._append_element_ui(
             1600,
