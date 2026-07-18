@@ -360,6 +360,7 @@ class Sound:
     portal_enter: Optional[pygame.mixer.Sound] = None
     earn_selement: Optional[pygame.mixer.Sound] = None
     kill_mob: Optional[pygame.mixer.Sound] = None
+    complete: Optional[pygame.mixer.Sound] = None
 
     @staticmethod
     def load() -> None:
@@ -373,6 +374,7 @@ class Sound:
         Sound.portal_enter = pygame.mixer.Sound("Sounds/portal_enter.mp3")
         Sound.earn_selement = pygame.mixer.Sound("Sounds/earn_selement.ogg")
         Sound.kill_mob = pygame.mixer.Sound("Sounds/kill_mob.wav")
+        Sound.complete = pygame.mixer.Sound("Sounds/complete.wav")
 
     @staticmethod
     def play_music(music_path: str) -> None:

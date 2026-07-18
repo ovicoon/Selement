@@ -368,6 +368,7 @@ class Player:
         if keys[pygame.K_f]:
             self.charging = True
             if self.element_charge_timer.is_finished():
+                assets.Sound.complete.play()
                 if self.player_biome == biome.Biome.fire:
                     self.fire += 50
                 elif self.player_biome == biome.Biome.water:
