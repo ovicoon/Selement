@@ -758,7 +758,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     self.quit_game()
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_F12:
+                    if event.key == pygame.K_F12 and DEVELOP_MODE:
                         # 디버그 토글 (F12)
                         self.debug = not self.debug
                     if event.key == pygame.K_ESCAPE:
