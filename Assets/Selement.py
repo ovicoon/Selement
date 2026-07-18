@@ -52,7 +52,7 @@ from modules import (
 # ==========================
 DEVELOP_MODE: bool = True
 RENDER_COLLIDER: bool = False
-VERSION: str = "1.4.0" if not DEVELOP_MODE else "dev"
+VERSION: str = "1.5.0" if not DEVELOP_MODE else "dev"
 LANGUAGE: language.Language = language.Language.ENGLISH
 
 INTRO_SCENE_DURATION: float = 0.5 if DEVELOP_MODE else 2.0  # 인트로 씬 지속 시간
