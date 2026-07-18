@@ -156,7 +156,6 @@ class Game:
         self.credit_scene: utility.Scene = utility.Scene()
         self.input_username: utility.Scene = utility.Scene()
         self.end_scene: utility.Scene = utility.Scene()
-        self.key_scene: utility.Scene = utility.Scene()
 
         # 최소 씬 구성 메서드 호출
         self._setup_intro_scene()
@@ -167,7 +166,6 @@ class Game:
         self._setup_title_scene()
         self._setup_credit_scene()
         self._setup_username_scene()
-        self._setup_key_scene()
 
     def _setup_intro_scene(self) -> None:
         """인트로 로고 씬 구성"""
@@ -277,20 +275,6 @@ class Game:
                 center_pivot=False,
             )
         )
-        self.title_scene.ui.append(
-            utility.Button(
-                1820,
-                780,
-                100,
-                100,
-                self.lang.get(language.TextKey.CONTROLS)[0],
-                (255, 255, 255),
-                (100, 100, 100),
-                self.show_keys,
-                assets.Font.small,
-                center_pivot=False,
-            )
-        )
 
     def _setup_credit_scene(self) -> None:
         """크레딧 씬 구성"""
@@ -344,34 +328,6 @@ class Game:
             utility.InputField(0, 0, (500, 200), self.ready_to_play)
         )
 
-    def _setup_key_scene(self) -> None:
-        """조작법 안내 씬 구성"""
-        self.key_scene.ui.append(
-            utility.OverLaySurface(
-                0,
-                0,
-                utility.str_to_surface(
-                    self.lang.get(language.TextKey.ESC_TO_EXIT)[0],
-                    assets.Font.small,
-                    (255, 255, 255),
-                ),
-                center_pivot=False,
-            )
-        )
-
-        self.key_scene.ui.append(
-            utility.OverLaySurface(
-                0,
-                100,
-                utility.str_to_surface(
-                    self.lang.get(language.TextKey.KEY_CONTROLS)[0],
-                    assets.Font.medium,
-                    (255, 255, 255),
-                ),
-                center_pivot=False,
-            )
-        )
-
     # ----------------------
     # 게임 기본 동작
     # ----------------------
@@ -417,10 +373,6 @@ class Game:
                 assets.Sound.fadein_music("Sounds/wind_blowing.wav", 2000)
             elif self.player_biome == biome.Biome.fifth_biome:
                 assets.Sound.pause_music()
-
-    def show_keys(self) -> None:
-        """키 안내 씬으로 전환"""
-        self.set_scene(self.key_scene)
 
     def set_language_english(self) -> None:
         """언어를 영어로 설정하고 씬 구성 후 이름 입력 씬으로 전환"""
@@ -764,10 +716,7 @@ class Game:
                         self.debug = not self.debug
                     if event.key == pygame.K_ESCAPE:
                         # 크레딧/조작법 씬에서 esc를 누르면 타이틀로 복귀
-                        if (
-                            self.active_scene == self.credit_scene
-                            or self.active_scene == self.key_scene
-                        ):
+                        if self.active_scene == self.credit_scene:
                             self.set_scene(self.title_scene)
 
             # 델타 타임 업데이트
