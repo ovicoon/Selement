@@ -191,13 +191,13 @@ class ScreenEffect:
         self.effect_surface: pygame.Surface = pygame.Surface(
             (utility.Screen.target_width, utility.Screen.target_height),
         )
-        self.dark_surface: Optional[pygame.Surface] = None
+        self.dark_surface: pygame.Surface = pygame.Surface(
+            (utility.Screen.target_width, utility.Screen.target_height),
+        )
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
-        self.gray_surface: pygame.Surface = pygame.Surface(
-            (utility.Screen.game_width, utility.Screen.game_height),
-        )
-        self.grain_intensity: float = 0
+        self.last_surface: pygame.Surface | None = None
+        self.motion_blur: float = 0
 
     def darken(self, time: float) -> None:
         """time 초 동안 서서히 화면을 어둡게 만드는 효과를 시작합니다."""
@@ -205,9 +205,9 @@ class ScreenEffect:
 
     def remove_all_effect(self) -> None:
         """적용된 모든 이펙트를 제거합니다."""
-        self.dark_surface = None
+        self.dark_surface.set_alpha(0)
         self.darken_timer = None
-        self.grain_intensity = 0
+        self.motion_blur = 0
 
     def post_process(self, surface: pygame.Surface) -> pygame.Surface:
         """
@@ -215,24 +215,12 @@ class ScreenEffect:
         """
         final_surface = surface
 
-        if self.grain_intensity > 0:
-            if random.random() < self.grain_intensity:
-                screen_width, screen_height = (
-                    utility.Screen.game_width,
-                    utility.Screen.game_height,
-                )
+        if self.motion_blur > 0:
+            if self.last_surface:
+                self.last_surface.set_alpha(255 * self.motion_blur)
+                final_surface.blit(self.last_surface, (0, 0))
 
-                # [랜덤 위치 및 크기 설정]
-                rect_width = random.randint(10, 150)  # 사각형 가로 크기 (10~150 픽셀)
-                rect_height = random.randint(10, 150)  # 사각형 세로 크기 (10~150 픽셀)
-                rect_x = random.randint(0, screen_width - rect_width)
-                rect_y = random.randint(0, screen_height - rect_height)
-
-                pygame.draw.rect(
-                    final_surface,
-                    (255, 255, 255),
-                    (rect_x, rect_y, rect_width, rect_height),
-                )
+            self.last_surface = final_surface.copy()
 
         # 투명 초기화
         self.effect_surface.fill((255, 255, 255, 0))
@@ -247,7 +235,7 @@ class ScreenEffect:
             alpha = max(ALPHA_MIN, min(ALPHA_MAX, alpha))
 
             # dark_screen 복사본을 만들고 alpha 적용
-            self.dark_surface = assets.Image.dark_screen.copy()
+            self.dark_surface.fill((0, 0, 0))
             self.dark_surface.set_alpha(alpha)
             self.effect_surface.blit(self.dark_surface, (0, 0))
 
