@@ -58,6 +58,7 @@ class LineKey(Enum):
     AFTER_BOSS = "AFTER_BOSS"
     NORMAL_ENDING = "NORMAL_ENDING"
     EASTER_EGG_ENDING = "EASTER_EGG_ENDING"
+    TUTORIAL = "TUTORIAL"
 
 
 class TextKey(Enum):
@@ -177,9 +178,10 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
             "...",
             "그나저나...",
             "내가 모은 원소들은 어디에 간거지?",
-            "100개씩이나 모았는데...",
+            "최대한 많이 모았는데...",
             "The End",
         ],
+        LineKey.TUTORIAL: ["원소를 충전하려면 [F] 키를 누르세요"],
         TextKey.INPUT_NAME: ["유저 이름을 입력하세요"],
         TextKey.SELECT_LANGUAGE: ["언어 선택"],
         TextKey.ENGLISH: ["English"],
@@ -304,9 +306,10 @@ LANGUAGE_DATA: Dict[Language, Dict[LineKey, List[str]]] = {
             "...",
             "By the way...",
             "Where did my elements go?",
-            "I had over a hundred...",
+            "I had maximum...",
             "The End",
         ],
+        LineKey.TUTORIAL: ["Press [F] to charge element"],
         TextKey.INPUT_NAME: ["Please enter username"],
         TextKey.SELECT_LANGUAGE: ["Select Language"],
         TextKey.ENGLISH: ["English"],
