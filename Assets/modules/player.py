@@ -149,10 +149,10 @@ class Player:
         )
         self.charging: bool = False
 
-        self.fire: int = 0
-        self.water: int = 0
-        self.dirt: int = 0
-        self.air: int = 0
+        self.fire: int = 50
+        self.water: int = 50
+        self.dirt: int = 50
+        self.air: int = 50
         self.selement: int = 0  # '셀레먼트' 카운트
 
         # 선택 공격 타입 (기본: fire)

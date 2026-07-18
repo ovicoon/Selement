@@ -701,6 +701,7 @@ class Game:
         if self.game_world.player.alive == False and self.last_player_alive:
             self.post_processor.darken(3)
             self.last_darken_finished = False
+            assets.Sound.fadeout_music(3000)
 
         if self.post_processor.darken_timer:
             if (

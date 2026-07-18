@@ -393,5 +393,10 @@ class Sound:
 
     @staticmethod
     def fadeout_music(duration_ms: int) -> None:
+        """현재 재생 중인 배경 음악을 지정된 시간(ms) 동안 페이드아웃합니다."""
+        pygame.mixer.music.fadeout(duration_ms)
+
+    @staticmethod
+    def fadeout_music(duration_ms: int) -> None:
         """배경 음악을 지정된 시간(ms) 동안 페이드아웃하여 정지합니다."""
         pygame.mixer.music.fadeout(duration_ms)
