@@ -461,13 +461,14 @@ class Game:
 
         self.play_scene.ui.append(
             utility.OverLaySurface(
-                0,
-                -400,
+                1475,
+                284,
                 utility.str_to_surface(
                     self.lang.get(language.TextKey.TUTORIAL)[0],
-                    assets.Font.medium,
+                    assets.Font.small,
                     (255, 255, 255),
                 ),
+                center_pivot=False,
             )
         )
 
