@@ -196,7 +196,9 @@ class ScreenEffect:
         )
         self.darken_timer: Optional[utility.TimeKeeper] = None
 
-        self.last_surface: pygame.Surface | None = None
+        self.last_surface: pygame.Surface = pygame.Surface(
+            (utility.Screen.target_width, utility.Screen.target_height),
+        )
         self.motion_blur: float = 0
 
     def darken(self, time: float) -> None:
@@ -220,7 +222,7 @@ class ScreenEffect:
                 self.last_surface.set_alpha(255 * self.motion_blur)
                 final_surface.blit(self.last_surface, (0, 0))
 
-            self.last_surface = final_surface.copy()
+            self.last_surface.blit(final_surface, (0, 0))
 
         # 투명 초기화
         self.effect_surface.fill((255, 255, 255, 0))
