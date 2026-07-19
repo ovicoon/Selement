@@ -154,6 +154,7 @@ class Player:
         self.dirt: int = 50
         self.air: int = 50
         self.selement: int = 0  # '셀레먼트' 카운트
+        self.i_need_tutorial: bool = True  # 원소 충전 튜토리얼 표시 여부
 
         # 선택 공격 타입 (기본: fire)
         self.selected_attack_code: int = 0
@@ -400,6 +401,7 @@ class Player:
 
                 if before_charge != after_charge:
                     assets.Sound.complete.play()
+                    self.i_need_tutorial = False
         else:
             self.element_charge_timer = utility.TimeKeeper(
                 duration=self.element_charge_speed

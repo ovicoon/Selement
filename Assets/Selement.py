@@ -139,6 +139,8 @@ class Game:
         self.last_boss_alive: bool = False
         self.last_darken_finished: bool = False
 
+        self.tutorial_blink: utility.Animation | None = None
+
     # ----------------------
     # 씬 및 초기화 헬퍼
     # ----------------------
@@ -162,10 +164,22 @@ class Game:
         self._setup_language_scene()
 
     def _setup_all_scene(self) -> None:
-        """나머지 모든 씬 구성 호출"""
+        """나머지 모든 씬 구성 호출및 튜토리얼 설정"""
         self._setup_title_scene()
         self._setup_credit_scene()
         self._setup_username_scene()
+
+        self.tutorial_blink: utility.Animation = utility.Animation(
+            [
+                utility.str_to_surface(
+                    self.lang.get(language.TextKey.TUTORIAL)[0],
+                    assets.Font.small,
+                    (255, 255, 255),
+                ),
+                pygame.Surface((0, 0)),
+            ],
+            2,
+        )
 
     def _setup_intro_scene(self) -> None:
         """인트로 로고 씬 구성"""
@@ -459,18 +473,16 @@ class Game:
             )
         )
 
-        self.play_scene.ui.append(
-            utility.OverLaySurface(
-                1475,
-                284,
-                utility.str_to_surface(
-                    self.lang.get(language.TextKey.TUTORIAL)[0],
-                    assets.Font.small,
-                    (255, 255, 255),
-                ),
-                center_pivot=False,
+        if self.game_world.player.i_need_tutorial:
+            self.play_scene.ui.append(
+                utility.OverLaySurface(
+                    1475,
+                    284,
+                    self.tutorial_blink.current_frame,
+                    center_pivot=False,
+                )
             )
-        )
+            self.tutorial_blink.update()
 
         # 원소들 렌더링(아이콘 위치와 텍스트 위치를 헬퍼로 추가)
         self._append_element_ui(
