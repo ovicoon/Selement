@@ -630,49 +630,51 @@ class Game:
 
         # Selement 사용(엔딩 트리거) 처리
         if self.game_world.player.ended and self.game_world.player.alive:
-            if not self.last_player_ended:
-                self.post_processor.darken(3)
-                self.last_darken_finished = False
+            if self.current_line:
+                if self.current_line.name != "the end":
+                    if not self.last_player_ended:
+                        self.post_processor.darken(3)
+                        self.last_darken_finished = False
 
-            if self.post_processor.darken_timer:
-                if (
-                    self.post_processor.darken_timer.is_finished()
-                    and not self.last_darken_finished
-                ):
-                    self.post_processor.remove_all_effect()
-                    self.set_scene(self.end_scene)
+                    if self.post_processor.darken_timer:
+                        if (
+                            self.post_processor.darken_timer.is_finished()
+                            and not self.last_darken_finished
+                        ):
+                            self.post_processor.remove_all_effect()
+                            self.set_scene(self.end_scene)
 
-                    if not DEVELOP_MODE:
-                        if not self.game_world.player.easter_egg_ending:
-                            self.current_line = utility.Line(
-                                0,
-                                0,
-                                0.1,
-                                self.lang.get(
-                                    language.LineKey.NORMAL_ENDING,
-                                    username=self.username,
-                                ),
-                                self.lang,
-                                name="the end",
-                            )
-                        else:
-                            self.current_line = utility.Line(
-                                0,
-                                0,
-                                0.1,
-                                self.lang.get(
-                                    language.LineKey.EASTER_EGG_ENDING,
-                                    username=self.username,
-                                ),
-                                self.lang,
-                                name="the end",
-                            )
-                    else:
-                        self.current_line = utility.Line(
-                            0, 0, 0.1, ["The End"], self.lang, name="the end"
-                        )
+                            if not DEVELOP_MODE:
+                                if not self.game_world.player.easter_egg_ending:
+                                    self.current_line = utility.Line(
+                                        0,
+                                        0,
+                                        0.1,
+                                        self.lang.get(
+                                            language.LineKey.NORMAL_ENDING,
+                                            username=self.username,
+                                        ),
+                                        self.lang,
+                                        name="the end",
+                                    )
+                                else:
+                                    self.current_line = utility.Line(
+                                        0,
+                                        0,
+                                        0.1,
+                                        self.lang.get(
+                                            language.LineKey.EASTER_EGG_ENDING,
+                                            username=self.username,
+                                        ),
+                                        self.lang,
+                                        name="the end",
+                                    )
+                            else:
+                                self.current_line = utility.Line(
+                                    0, 0, 0.1, ["The End"], self.lang, name="the end"
+                                )
 
-                    self.current_line.start()
+                            self.current_line.start()
 
         # 게임 오버 처리
         if self.game_world.player.alive == False and self.last_player_alive:
@@ -685,9 +687,10 @@ class Game:
                 self.post_processor.darken_timer.is_finished()
                 and not self.last_darken_finished
             ):
-                self.post_processor.remove_all_effect()
-                self.set_scene(self.title_scene)
-                self.current_line = None
+                if self.game_world.player.alive == False:
+                    self.post_processor.remove_all_effect()
+                    self.set_scene(self.title_scene)
+                    self.current_line = None
 
         # 활성 대사 추가 및 완료 후 후속 처리
         if self.current_line:
@@ -713,16 +716,18 @@ class Game:
                     )
 
                 if self.current_line.name == "the end":
-                    self.quit_game()
-
-            self.last_line_completed = self.current_line.completed
-            self.last_player_ended = self.game_world.player.ended
-            self.last_player_alive = self.game_world.player.alive
+                    self.set_scene(self.title_scene)
 
             if self.post_processor.darken_timer:
                 self.last_darken_finished = (
                     self.post_processor.darken_timer.is_finished()
                 )
+
+        if self.current_line:
+            self.last_line_completed = self.current_line.completed
+        if self.game_world:
+            self.last_player_ended = self.game_world.player.ended
+            self.last_player_alive = self.game_world.player.alive
 
     # ----------------------
     # 메인 루프
