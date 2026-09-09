@@ -113,7 +113,7 @@ class Mob(Entity):
         attack_animation: Any = None,
         speed_while_attack_multiplier: float = 0,
     ) -> None:
-        super().__init__(x, y, image, name, flat=True)
+        super().__init__(x, y, image, name)
 
         # 원본 이미지 보관(애니메이션 실패 시 복구용)
         self.original_image: Optional[pygame.Surface] = image
@@ -631,6 +631,7 @@ class ShockWave:
         self.name = name
         self.color = color
         self.thickness = thinkness
+        self.flat = True
 
         self.vel: float = vel
         self.damage: float = damage
@@ -703,7 +704,7 @@ class Projectile(Entity):
             pygame.transform.rotate(image, 360 - self.angle) if image else None
         )
 
-        super().__init__(x, y, rotated_image, name, flat=True)
+        super().__init__(x, y, rotated_image, name, center_pivot=True, flat=True)
 
         # 콜라이더 초기화 (이미지 기반 또는 반지름 기반)
         if self.image:

@@ -287,6 +287,17 @@ class Camera:
             self.shake_time = 0
             self.shake_strength = 0
 
+    def _calculate_render_coord(
+        self, x: float, y: float, width: float, height: float, center_pivot: bool = True
+    ) -> Tuple[float, float]:
+        """렌더링 좌표 계산 헬퍼 함수"""
+        render_x = Screen.target_width / 2 - width / 2 + x - self.x
+        if center_pivot:
+            render_y = Screen.target_height / 2 - height / 2 + y - self.y
+        else:
+            render_y = Screen.target_height / 2 - height + y - self.y
+        return render_x, render_y
+
     def render_scene(
         self,
         scene: Scene,
@@ -296,153 +307,154 @@ class Camera:
     ) -> None:
         """
         씬 렌더링:
-         - 배경 타일 렌더링
-         - 엔티티 컬링(화면 밖이면 그리지 않음)
-         - z-order( y 좌표 기준 )로 정렬하여 렌더링
-         - UI 렌더링 (Button/InputField/Line/OverLaySurface 처리)
-         - render_collider=True 이면 콜라이더를 시각화
+         - 배경 타일 렌더링 (tiles)
+         - 평면 엔티티 렌더링 (flat entities)
+         - 덮는 배경 타일 렌더링 (covering tiles)
+         - Y-order 정렬 엔티티 렌더링 (non flat entities)
+         - UI 및 디버그 콜라이더 렌더링
         """
         # 화면 초기화
         Screen.screen.fill((0, 0, 0))
         Screen.game_surface.fill((0, 0, 0))
 
-        collider_visuals = []
-        # 일괄 렌더링을 위한 blit 큐 생성
-        first_queue: List[Tuple[Any, Tuple[float, float]]] = []
-        second_queue: list[tuple[Any, tuple[float, float]]] = []
-        shock_wave: list[entities.ShockWave] = []
+        collider_visuals: List[Any] = []
+        shock_wave: List[entities.ShockWave] = []
 
-        # 더 효율적으로 보이는부분만 컬링하기 위함
+        # 뷰포트 영역 생성 (컬링용)
         viewport_rect = pygame.Rect(0, 0, view * 2, view * 2)
         viewport_rect.center = Screen.game_surface.get_rect().center
 
-        # 엔티티 리스트 처리: 컬링 및 그리기 대상 분류
-        non_flat: list[entities.Entity] = []
+        # ----------------------------------------------------
+        # 1. Tiles (배경 타일 렌더링)
+        # ----------------------------------------------------
+        background_queue: List[Tuple[Any, Tuple[float, float]]] = []
+        for tile in scene.background:
+            render_coord = self._calculate_render_coord(
+                tile.x,
+                tile.y,
+                tile.image.get_width(),
+                tile.image.get_height(),
+                center_pivot=True,
+            )
+            tile_rect = pygame.Rect(render_coord, tile.image.get_size())
+            if tile_rect.colliderect(viewport_rect):
+                background_queue.append((tile.image, render_coord))
+
+        if background_queue:
+            Screen.game_surface.blits(background_queue)
+
+        # ----------------------------------------------------
+        # 2. Flat Entities (평면 엔티티 분류 및 렌더링)
+        # ----------------------------------------------------
+        flat_queue: List[Tuple[Any, Tuple[float, float]]] = []
+        non_flat_entities: List[entities.Entity] = []
+
         for entity in scene.entities:
+            # 디버그용 콜라이더 시각화 대상 수집
+            if render_collider and hasattr(entity, "collider"):
+                if type(entity.collider) == FastCollider:
+                    collider_visuals.append(entity.collider)
 
             if getattr(entity, "image", None):
-                if entity.flat is False:
-                    non_flat.append(entity)
-                    continue
-
-                if entity.center_pivot is True:
-                    render_coord = (
-                        Screen.target_width / 2
-                        - entity.image.get_width() / 2
-                        + entity.x
-                        - self.x,
-                        Screen.target_height / 2
-                        - entity.image.get_height() / 2
-                        + entity.y
-                        - self.y,
+                if getattr(entity, "flat", False):
+                    center_pivot = getattr(entity, "center_pivot", True)
+                    render_coord = self._calculate_render_coord(
+                        entity.x,
+                        entity.y,
+                        entity.image.get_width(),
+                        entity.image.get_height(),
+                        center_pivot,
                     )
+                    entity_rect = pygame.Rect(render_coord, entity.image.get_size())
+
+                    if entity_rect.colliderect(viewport_rect):
+                        if getattr(entity, "do_not_arrange", False):
+                            self.on_ground.append((render_coord, entity))
+                        else:
+                            self.rendering_objects.append((render_coord, entity))
                 else:
-                    render_coord = (
-                        Screen.target_width / 2
-                        - entity.image.get_width() / 2
-                        + entity.x
-                        - self.x,
-                        Screen.target_height / 2
-                        - entity.image.get_height()
-                        + entity.y
-                        - self.y,
-                    )
-
-                entity_rect = pygame.Rect(render_coord, entity.image.get_size())
-
-                # 엔티티 컬링: 화면 내부에 있으면 rendering_objects에, do_not_arrange면 on_ground에
-                if entity_rect.colliderect(viewport_rect) and not getattr(
-                    entity, "do_not_arrange", False
-                ):
-                    self.rendering_objects.append((render_coord, entity))
-                elif getattr(entity, "do_not_arrange", False):
-                    self.on_ground.append((render_coord, entity))
-
+                    non_flat_entities.append(entity)
             else:
                 if type(entity) == entities.ShockWave:
                     shock_wave.append(entity)
 
-            # 디버그용 콜라이더 시각화 대상 수집
-            if render_collider:
-                if hasattr(entity, "collider"):
-                    if type(entity.collider) == FastCollider:
-                        collider_visuals.append(entity.collider)
+        # Flat 엔티티 렌더링 (on_ground -> rendering_objects 순)
+        for render_coord, entity in self.on_ground:
+            flat_queue.append((entity.image, render_coord))
+        for render_coord, entity in self.rendering_objects:
+            flat_queue.append((entity.image, render_coord))
 
-        # 배경 타일 렌더링 (컬링 포함) - blit 큐에 추가
-        for tile in scene.background:
-            render_coord = (
-                Screen.target_width / 2 - tile.image.get_width() / 2 + tile.x - self.x,
-                Screen.target_height / 2
-                - tile.image.get_height() / 2
-                + tile.y
-                - self.y,
-            )
-            tile_rect = pygame.Rect(render_coord, tile.image.get_size())
-            if tile_rect.colliderect(viewport_rect):
-                first_queue.append((tile.image, render_coord))
+        if flat_queue:
+            Screen.game_surface.blits(flat_queue)
 
-        # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
-        for entity in self.on_ground:
-            first_queue.append((entity[1].image, entity[0]))
+        self.on_ground.clear()
+        self.rendering_objects.clear()
 
-        if first_queue:
-            Screen.game_surface.blits(first_queue)
-
+        # ShockWave 렌더링
         if shock_wave:
             for wave in shock_wave:
                 wave.render(Screen.game_surface, self.x, self.y)
 
-        # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐) - blit 큐에 추가
-        rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
-        for obj in rendering_order:
-            second_queue.append((obj[1].image, obj[0]))
-
+        # ----------------------------------------------------
+        # 3. Covering Tiles (덮는 타일 렌더링)
+        # ----------------------------------------------------
+        covering_queue: List[Tuple[Any, Tuple[float, float]]] = []
         for tile in scene.covering_background:
-            render_coord = (
-                Screen.target_width / 2 - tile.image.get_width() / 2 + tile.x - self.x,
-                Screen.target_height / 2
-                - tile.image.get_height() / 2
-                + tile.y
-                - self.y,
+            render_coord = self._calculate_render_coord(
+                tile.x,
+                tile.y,
+                tile.image.get_width(),
+                tile.image.get_height(),
+                center_pivot=True,
             )
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
             if tile_rect.colliderect(viewport_rect):
-                second_queue.append((tile.image, render_coord))
+                covering_queue.append((tile.image, render_coord))
 
-        for entity in non_flat:
-            if getattr(entity, "image", None):
-                if entity.center_pivot is True:
-                    render_coord = (
-                        Screen.target_width / 2
-                        - entity.image.get_width() / 2
-                        + entity.x
-                        - self.x,
-                        Screen.target_height / 2
-                        - entity.image.get_height() / 2
-                        + entity.y
-                        - self.y,
-                    )
+        if covering_queue:
+            Screen.game_surface.blits(covering_queue)
+
+        # ----------------------------------------------------
+        # 4. Non-Flat Entities (비평면 엔티티 Z-order 정렬 및 렌더링)
+        # ----------------------------------------------------
+        non_flat_queue: List[Tuple[Any, Tuple[float, float]]] = []
+
+        for entity in non_flat_entities:
+            center_pivot = getattr(entity, "center_pivot", True)
+            render_coord = self._calculate_render_coord(
+                entity.x,
+                entity.y,
+                entity.image.get_width(),
+                entity.image.get_height(),
+                center_pivot,
+            )
+            entity_rect = pygame.Rect(render_coord, entity.image.get_size())
+
+            if entity_rect.colliderect(viewport_rect):
+                if getattr(entity, "do_not_arrange", False):
+                    self.on_ground.append((render_coord, entity))
                 else:
-                    render_coord = (
-                        Screen.target_width / 2
-                        - entity.image.get_width() / 2
-                        + entity.x
-                        - self.x,
-                        Screen.target_height / 2
-                        - entity.image.get_height()
-                        + entity.y
-                        - self.y,
-                    )
+                    self.rendering_objects.append((render_coord, entity))
 
-                entity_rect = pygame.Rect(render_coord, entity.image.get_size())
-                if entity_rect.colliderect(viewport_rect):
-                    second_queue.append((entity.image, render_coord))
+        # do_not_arrange 대상 먼저 추가
+        for render_coord, entity in self.on_ground:
+            non_flat_queue.append((entity.image, render_coord))
 
-        # 모아둔 월드 엔티티들을 한번에 blits로 그리기
-        if second_queue:
-            Screen.game_surface.blits(second_queue)
+        # Y 좌표 기준 정렬 후 추가
+        rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
+        for render_coord, entity in rendering_order:
+            non_flat_queue.append((entity.image, render_coord))
 
-        # 콜라이더 렌더(디버그)
+        if non_flat_queue:
+            Screen.game_surface.blits(non_flat_queue)
+
+        # 렌더 큐 초기화
+        self.on_ground.clear()
+        self.rendering_objects.clear()
+
+        # ----------------------------------------------------
+        # 디버그 콜라이더 시각화
+        # ----------------------------------------------------
         for col in collider_visuals:
             pygame.draw.circle(
                 Screen.game_surface,
@@ -455,19 +467,15 @@ class Camera:
                 10,
             )
 
-        # 렌더 큐 초기화
-        self.on_ground.clear()
-        self.rendering_objects.clear()
-
-        # UI 렌더링: 버튼/입력창/라인/오버레이 등 처리
+        # ----------------------------------------------------
+        # UI 렌더링
+        # ----------------------------------------------------
         for ui in scene.ui:
-            # Button, InputField는 업데이트를 통해 자기 자신을 그린다
             if type(ui) in [Button, InputField]:
                 ui.update(pygame_event)
             elif type(ui) == Line:
                 ui.update(pygame_event)
             elif type(ui) == OverLaySurface:
-                # OverLaySurface는 이미 정렬된 surface/rect가 있으므로 바로 blit
                 Screen.game_surface.blit(ui.surface, ui.rect)
 
 

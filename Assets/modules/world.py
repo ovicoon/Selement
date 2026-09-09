@@ -229,8 +229,25 @@ class World:
                         self.covering_background.append(tile)
 
     def _append_visible_entity(self, e: entities.Entity) -> None:
-        """버퍼에 추가."""
-        self.entities.append(e)
+        """현재 플레이어 바이옴/수역 상태에 따라 표시 여부를 결정해 버퍼에 추가."""
+        if e.flat is False:
+            if self.player_biome == biome.Biome.water:
+                # 수중: 물 속 엔티티만 보이게
+                if e.biome == biome.Biome.water:
+                    self.entities.append(e)
+                elif e.biome == None:
+                    if self.get_tile_biome(e.x, e.y) == biome.Biome.water:
+                        self.entities.append(e)
+            else:
+                # 지상: 물 속 엔티티는 숨김
+                if e.biome != biome.Biome.water and e.biome != None:
+                    self.entities.append(e)
+                elif e.biome == None:
+                    if self.get_tile_biome(e.x, e.y) != biome.Biome.water:
+                        self.entities.append(e)
+        else:
+            # flat 엔티티는 항상 보이게
+            self.entities.append(e)
 
     def _refresh_entities(self, dt: float) -> None:
         """엔티티 버퍼(self.entities)를 구성."""
@@ -562,6 +579,7 @@ class Room(World):
         self.height = height
 
         self.background: List[Tile] = []
+        self.covering_background: List[Tile] = []
         self.entities: List[entities.Entity] = []
         self.static_objects: List[entities.Entity] = []
         self.mob: List[entities.Entity] = []
