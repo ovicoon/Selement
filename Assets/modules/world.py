@@ -122,6 +122,7 @@ class World:
         # 렌더 버퍼 & 시스템 리스트
         self.entities: List[entities.Entity] = []
         self.background: List[Tile] = []
+        self.covering_background: List[Tile] = []
         self.mob: List[entities.Entity] = []
         self.mob_attack: List[entities.Projectile] = []
         self.player_attack: List[entities.Projectile] = []
@@ -195,8 +196,9 @@ class World:
 
     # ---- 렌더 준비(타일/엔티티) ----
     def _refresh_tiles(self) -> None:
-        """타일 버퍼(self.background)를 구성."""
+        """타일 버퍼(self.background, self.covering_background)를 구성."""
         self.background.clear()
+        self.covering_background.clear()
         water_frame = self.water_animation.update()
 
         for chunk in self._iter_loaded_chunks():
@@ -211,31 +213,24 @@ class World:
                         tile.image = assets.Image.air_tile
                     elif tile.biome == biome.Biome.water:
                         tile.image = water_frame
+
+                    if tile.biome == biome.Biome.water:
+                        self.covering_background.append(tile)
+                    else:
+                        self.background.append(tile)
+
                 else:
                     # 수중
                     if tile.biome == biome.Biome.water:
                         tile.image = assets.Image.underwater_tile
+                        self.background.append(tile)
                     else:
                         tile.image = assets.Image.underwater_ground_tile
-
-                self.background.append(tile)
+                        self.covering_background.append(tile)
 
     def _append_visible_entity(self, e: entities.Entity) -> None:
-        """현재 플레이어 바이옴/수역 상태에 따라 표시 여부를 결정해 버퍼에 추가."""
-        if self.player_biome == biome.Biome.water:
-            # 수중: 물 속 엔티티만 보이게
-            if e.biome == biome.Biome.water:
-                self.entities.append(e)
-            elif e.biome == None:
-                if self.get_tile_biome(e.x, e.y) == biome.Biome.water:
-                    self.entities.append(e)
-        else:
-            # 지상: 물 속 엔티티는 숨김
-            if e.biome != biome.Biome.water and e.biome != None:
-                self.entities.append(e)
-            elif e.biome == None:
-                if self.get_tile_biome(e.x, e.y) != biome.Biome.water:
-                    self.entities.append(e)
+        """버퍼에 추가."""
+        self.entities.append(e)
 
     def _refresh_entities(self, dt: float) -> None:
         """엔티티 버퍼(self.entities)를 구성."""

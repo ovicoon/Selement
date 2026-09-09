@@ -251,6 +251,7 @@ class Scene:
     def __init__(self) -> None:
         self.entities: List[Any] = []
         self.background: List[Any] = []  # 엔티티보다 먼저 렌더링
+        self.covering_background: List[Any] = []  # 엔티티 다음 렌더링, 물속/밖 표현
         self.ui: List[Any] = []  # 엔티티 다음에 렌더링
 
 
@@ -307,8 +308,8 @@ class Camera:
 
         collider_visuals = []
         # 일괄 렌더링을 위한 blit 큐 생성
-        tile_queue: List[Tuple[Any, Tuple[float, float]]] = []
-        entity_queue: list[tuple[Any, tuple[float, float]]] = []
+        first_queue: List[Tuple[Any, Tuple[float, float]]] = []
+        second_queue: list[tuple[Any, tuple[float, float]]] = []
         shock_wave: list[entities.ShockWave] = []
 
         # 더 효율적으로 보이는부분만 컬링하기 위함
@@ -316,8 +317,14 @@ class Camera:
         viewport_rect.center = Screen.game_surface.get_rect().center
 
         # 엔티티 리스트 처리: 컬링 및 그리기 대상 분류
+        non_flat: list[entities.Entity] = []
         for entity in scene.entities:
+
             if getattr(entity, "image", None):
+                if entity.flat is False:
+                    non_flat.append(entity)
+                    continue
+
                 if entity.center_pivot is True:
                     render_coord = (
                         Screen.target_width / 2
@@ -372,14 +379,14 @@ class Camera:
             )
             tile_rect = pygame.Rect(render_coord, tile.image.get_size())
             if tile_rect.colliderect(viewport_rect):
-                tile_queue.append((tile.image, render_coord))
+                first_queue.append((tile.image, render_coord))
 
         # on_ground(땅 위 고정 오브젝트) 먼저 렌더 - blit 큐에 추가
         for entity in self.on_ground:
-            tile_queue.append((entity[1].image, entity[0]))
+            first_queue.append((entity[1].image, entity[0]))
 
-        if tile_queue:
-            Screen.game_surface.blits(tile_queue)
+        if first_queue:
+            Screen.game_surface.blits(first_queue)
 
         if shock_wave:
             for wave in shock_wave:
@@ -388,11 +395,52 @@ class Camera:
         # rendering_objects를 y 값으로 정렬하여 그리기 (y가 작으면 먼저 그려짐) - blit 큐에 추가
         rendering_order = sorted(self.rendering_objects, key=lambda e: e[1].y)
         for obj in rendering_order:
-            entity_queue.append((obj[1].image, obj[0]))
+            second_queue.append((obj[1].image, obj[0]))
+
+        for tile in scene.covering_background:
+            render_coord = (
+                Screen.target_width / 2 - tile.image.get_width() / 2 + tile.x - self.x,
+                Screen.target_height / 2
+                - tile.image.get_height() / 2
+                + tile.y
+                - self.y,
+            )
+            tile_rect = pygame.Rect(render_coord, tile.image.get_size())
+            if tile_rect.colliderect(viewport_rect):
+                second_queue.append((tile.image, render_coord))
+
+        for entity in non_flat:
+            if getattr(entity, "image", None):
+                if entity.center_pivot is True:
+                    render_coord = (
+                        Screen.target_width / 2
+                        - entity.image.get_width() / 2
+                        + entity.x
+                        - self.x,
+                        Screen.target_height / 2
+                        - entity.image.get_height() / 2
+                        + entity.y
+                        - self.y,
+                    )
+                else:
+                    render_coord = (
+                        Screen.target_width / 2
+                        - entity.image.get_width() / 2
+                        + entity.x
+                        - self.x,
+                        Screen.target_height / 2
+                        - entity.image.get_height()
+                        + entity.y
+                        - self.y,
+                    )
+
+                entity_rect = pygame.Rect(render_coord, entity.image.get_size())
+                if entity_rect.colliderect(viewport_rect):
+                    second_queue.append((entity.image, render_coord))
 
         # 모아둔 월드 엔티티들을 한번에 blits로 그리기
-        if entity_queue:
-            Screen.game_surface.blits(entity_queue)
+        if second_queue:
+            Screen.game_surface.blits(second_queue)
 
         # 콜라이더 렌더(디버그)
         for col in collider_visuals:

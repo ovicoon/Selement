@@ -789,6 +789,9 @@ class Game:
                 )
                 self.play_scene.entities = self.game_world.entities
                 self.play_scene.background = self.game_world.background
+                self.play_scene.covering_background = (
+                    self.game_world.covering_background
+                )
 
                 # BGM 및 UI 업데이트
                 self.play_bgm()

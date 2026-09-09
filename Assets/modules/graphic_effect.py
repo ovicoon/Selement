@@ -78,6 +78,7 @@ class Particle:
         self.name: str = "particle"
         self.center_pivot: bool = False
         self.do_not_arrange: bool = False
+        self.flat: bool = True
 
         self.vel: float = vel
         self.angle: float = angle

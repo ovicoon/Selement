@@ -61,6 +61,7 @@ class Entity:
         name: str,
         center_pivot: bool = False,
         do_not_arrange: bool = False,
+        flat: bool = False,
         biome: biome.Biome | None = None,
     ) -> None:
         # 위치 및 시각적 표현
@@ -72,6 +73,7 @@ class Entity:
         self.name: str = name
         self.center_pivot: bool = center_pivot
         self.do_not_arrange: bool = do_not_arrange
+        self.flat: bool = flat
         self.biome: biome.Biome | None = biome
 
 
@@ -111,7 +113,7 @@ class Mob(Entity):
         attack_animation: Any = None,
         speed_while_attack_multiplier: float = 0,
     ) -> None:
-        super().__init__(x, y, image, name)
+        super().__init__(x, y, image, name, flat=True)
 
         # 원본 이미지 보관(애니메이션 실패 시 복구용)
         self.original_image: Optional[pygame.Surface] = image
@@ -701,7 +703,7 @@ class Projectile(Entity):
             pygame.transform.rotate(image, 360 - self.angle) if image else None
         )
 
-        super().__init__(x, y, rotated_image, name)
+        super().__init__(x, y, rotated_image, name, flat=True)
 
         # 콜라이더 초기화 (이미지 기반 또는 반지름 기반)
         if self.image:
