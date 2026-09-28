@@ -1,15 +1,27 @@
-A philosophical game about self and elements.
+A philosophical game about self and the elements.
 
-No stats, No any numbers. Just a vibe.
+No stats. No numbers. Just a vibe.
 
-You have everything... every elements and every power
+You have everything...
+Every element.
+Every power.
 
 ![fight](./Introduce/fight.gif)
 
-But it is not easy... why..?
+But it is not easy...
+
+Why...?
 
 ![combat](./Introduce/combat.gif)
 
-You maybe missing something... but... what is it...?
+Maybe you're missing something...
+
+But... what is it...?
 
 ![portal](./Introduce/portal.gif)
+
+What was that...?
+
+It looks like a portal...
+
+And it seems to me that it holds the secret to my powers...
