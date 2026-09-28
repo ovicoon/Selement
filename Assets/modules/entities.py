@@ -411,6 +411,8 @@ class Biter(Mob):
 class Flutterer(Mob):
     """돌격형 몹: 이동 중 공격을 수행"""
 
+    retreat_distance: float = 300
+
     def __init__(self, x: float, y: float) -> None:
         super().__init__(
             x,
@@ -433,6 +435,17 @@ class Flutterer(Mob):
         super().update(world, dt)
         if self.state == MobState.attack_execute:
             world.player.get_damage(1)
+
+            random_angle = random.uniform(0, 360)
+
+            # 2. 크기는 retreat_distance, 각도는 random_angle인 벡터 생성
+            offset = pygame.Vector2()
+            offset.from_polar((self.retreat_distance, random_angle))
+
+            # 3. 플레이어 위치에 오프셋을 더해 최종 스폰 위치 결정
+            spawn_position = pygame.Vector2(world.player.x, world.player.y) + offset
+            self.x = spawn_position.x
+            self.y = spawn_position.y
 
 
 class Plower(Mob):
@@ -477,6 +490,9 @@ class BossSelfState(Enum):
     projectile = 0
     wave = 1
     summon_minions = 2
+    core_shot = 3
+    machine_gun = 4
+    multi_wave = 5
 
 
 class BossSelf(Mob):
@@ -489,15 +505,22 @@ class BossSelf(Mob):
             "Self",
             None,
             float("inf"),
-            (None, 0, 0),
+            (0, 0, 0),
             2000,
             None,
-            0,
+            None,
             None,
         )
 
         self.next_attack: BossSelfState = random.choice(
-            [BossSelfState.projectile, BossSelfState.wave, BossSelfState.summon_minions]
+            [
+                BossSelfState.projectile,
+                BossSelfState.wave,
+                BossSelfState.summon_minions,
+                BossSelfState.core_shot,
+                BossSelfState.machine_gun,
+                BossSelfState.multi_wave,
+            ]
         )
 
         self.start: bool = False
@@ -519,6 +542,9 @@ class BossSelf(Mob):
                         BossSelfState.projectile,
                         BossSelfState.wave,
                         BossSelfState.summon_minions,
+                        BossSelfState.core_shot,
+                        BossSelfState.machine_gun,
+                        BossSelfState.multi_wave,
                     ]
                 )
                 self.attack_change_timer = utility.TimeKeeper(
@@ -530,23 +556,49 @@ class BossSelf(Mob):
                 self.attack_distance = 100
                 self.speeds = (900, 0, 0)
                 self.attack_recovery = 1
+                self.speed_while_attack_multiplier = 0
+                self.attack_startup = 0
             elif self.next_attack == BossSelfState.projectile:
                 self.attack_distance = 1000
                 self.speeds = (400, 0, 0)
                 self.attack_recovery = 0.5
                 self.speed_while_attack_multiplier = 0.5
+                self.attack_startup = 0
             elif self.next_attack == BossSelfState.summon_minions:
                 if len(world.mob) == 1:  # 보스만 남아있을 때만 소환
                     self.attack_distance = float("inf")
                     self.speeds = (400, 0, 0)
                     self.attack_recovery = 8
+                    self.attack_startup = 0
+                    self.speed_while_attack_multiplier = 0
                 else:
                     self.next_attack = random.choice(
                         [
                             BossSelfState.projectile,
                             BossSelfState.wave,
+                            BossSelfState.core_shot,
+                            BossSelfState.machine_gun,
+                            BossSelfState.multi_wave,
                         ]
                     )
+            elif self.next_attack == BossSelfState.core_shot:
+                self.attack_distance = 10000
+                self.speeds = (0, 0, 0)
+                self.attack_recovery = 10
+                self.attack_startup = 5
+                self.speed_while_attack_multiplier = 0
+            elif self.next_attack == BossSelfState.machine_gun:
+                self.attack_distance = 1000
+                self.speeds = (200, 0, 0)
+                self.attack_recovery = 0.1
+                self.attack_startup = 0
+                self.speed_while_attack_multiplier = 0.1
+            elif self.next_attack == BossSelfState.multi_wave:
+                self.attack_distance = 1000
+                self.speeds = (400, 0, 0)
+                self.attack_recovery = 5
+                self.speed_while_attack_multiplier = 0.5
+                self.attack_startup = 0
 
             super().update(world, dt)
 
@@ -593,6 +645,65 @@ class BossSelf(Mob):
                     world.mob.append(Biter(self.x + BOSS_MINION_OFFSET, self.y))
                     world.mob.append(Flutterer(self.x, self.y + BOSS_MINION_OFFSET))
                     world.mob.append(Plower(self.x, self.y - BOSS_MINION_OFFSET))
+
+                elif self.next_attack == BossSelfState.core_shot:
+                    dx = world.player.x - self.x
+                    dy = world.player.y - self.y
+                    if dx == 0 and dy == 0:
+                        angle = random.uniform(0, 360)
+                    else:
+                        angle = math.degrees(math.atan2(dy, dx))
+                    world.mob_attack.append(
+                        Projectile(
+                            self.x,
+                            self.y,
+                            "boss_self_core_ball",
+                            100,
+                            angle,
+                            assets.Image.boss_projectile,
+                            50,
+                            10000,
+                        )
+                    )
+
+                elif self.next_attack == BossSelfState.machine_gun:
+                    dx = world.player.x - self.x
+                    dy = world.player.y - self.y
+                    if dx == 0 and dy == 0:
+                        angle = random.uniform(0, 360)
+                    else:
+                        angle = math.degrees(math.atan2(dy, dx))
+
+                    bob = random.uniform(-5, 5)
+                    angle += bob
+
+                    world.mob_attack.append(
+                        Projectile(
+                            self.x,
+                            self.y,
+                            "boss_self_machine_gun_ball",
+                            1000,
+                            angle,
+                            assets.Image.boss_projectile,
+                            1,
+                            1000,
+                        )
+                    )
+
+                elif self.next_attack == BossSelfState.multi_wave:
+                    for i in range(10):
+                        world.mob_attack.append(
+                            ShockWave(
+                                self.x,
+                                self.y,
+                                "boss_self_multi_wave_fast",
+                                1000 / ((i + 1) ** 2),
+                                (0, 255, 182),
+                                1,
+                                1000,
+                                world,
+                            )
+                        )
 
         # 보스가 살아있을 때/죽었을 때 지속 파티클 처리
         if self.alive:
