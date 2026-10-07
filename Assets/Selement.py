@@ -868,7 +868,7 @@ if __name__ == "__main__":
                     }
                     # Worker의 플레이 세션 엔드포인트로 POST 요청 전송
                     response = requests.post(
-                        f"{WORKER_URL}/api/sessions", json=data, timeout=5
+                        f"{WORKER_URL}/api/selement/sessions", json=data, timeout=5
                     )
                 except Exception:
                     print("데이터 전송 중 오류 발생")
@@ -885,7 +885,7 @@ if __name__ == "__main__":
                 }
                 # Worker의 에러 로그 엔드포인트로 POST 요청 전송
                 response = requests.post(
-                    f"{WORKER_URL}/api/errors", json=data, timeout=5
+                    f"{WORKER_URL}/api/selement/errors", json=data, timeout=5
                 )
             except Exception:
                 print("데이터 전송 중 오류 발생")
