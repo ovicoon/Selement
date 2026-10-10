@@ -608,6 +608,8 @@ class Game:
                 for mob in self.game_world.mob:
                     mob.hp = 0
 
+                self.game_world.mob_attack.clear()
+
                 if self.last_boss_alive:
                     # 엔딩 노래 재생
                     assets.Sound.play_music("Sounds/ending_song.mp3")
