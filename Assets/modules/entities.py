@@ -650,7 +650,7 @@ class BossSelf(Mob):
                             "boss_self_core_ball",
                             100,
                             angle,
-                            assets.Image.boss_projectile,
+                            assets.Image.boss_core_shot,
                             50,
                             10000,
                         )
@@ -674,7 +674,7 @@ class BossSelf(Mob):
                             "boss_self_machine_gun_ball",
                             1000,
                             angle,
-                            assets.Image.boss_projectile,
+                            assets.Image.boss_machine_gun,
                             1,
                             1000,
                         )

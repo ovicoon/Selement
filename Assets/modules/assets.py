@@ -112,8 +112,9 @@ class Image:
     shield: Optional[pygame.Surface] = None
     super_shield: Optional[pygame.Surface] = None
     shock_wave: Optional[pygame.Surface] = None
-    boss_wave: Optional[pygame.Surface] = None
     boss_projectile: Optional[pygame.Surface] = None
+    boss_core_shot: Optional[pygame.Surface] = None
+    boss_machine_gun: Optional[pygame.Surface] = None
 
     dead_screen: Optional[pygame.Surface] = None
     dark_screen: Optional[pygame.Surface] = None
@@ -277,9 +278,14 @@ class Image:
             pygame.image.load("Images/super_shield.png").convert_alpha(), (256, 256)
         )
         Image.shock_wave = pygame.image.load("Images/shock_wave.png").convert_alpha()
-        Image.boss_wave = pygame.image.load("Images/boss_wave.png").convert_alpha()
         Image.boss_projectile = pygame.transform.scale(
             pygame.image.load("Images/boss_projectile.png").convert_alpha(), (128, 128)
+        )
+        Image.boss_core_shot = pygame.transform.scale(
+            pygame.image.load("Images/boss_core_shot.png").convert_alpha(), (128, 128)
+        )
+        Image.boss_machine_gun = pygame.transform.scale(
+            pygame.image.load("Images/boss_machine_gun.png").convert_alpha(), (128, 128)
         )
 
         # 화면 효과
