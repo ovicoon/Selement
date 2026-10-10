@@ -565,22 +565,12 @@ class BossSelf(Mob):
                 self.speed_while_attack_multiplier = 0.5
                 self.attack_startup = 0
             elif self.next_attack == BossSelfState.summon_minions:
-                if len(world.mob) == 1:  # 보스만 남아있을 때만 소환
-                    self.attack_distance = float("inf")
-                    self.speeds = (400, 0, 0)
-                    self.attack_recovery = 8
-                    self.attack_startup = 0
-                    self.speed_while_attack_multiplier = 0
-                else:
-                    self.next_attack = random.choice(
-                        [
-                            BossSelfState.projectile,
-                            BossSelfState.wave,
-                            BossSelfState.core_shot,
-                            BossSelfState.machine_gun,
-                            BossSelfState.multi_wave,
-                        ]
-                    )
+                self.attack_distance = float("inf")
+                self.speeds = (400, 0, 0)
+                self.attack_recovery = 8
+                self.attack_startup = 0
+                self.speed_while_attack_multiplier = 0
+
             elif self.next_attack == BossSelfState.core_shot:
                 self.attack_distance = 10000
                 self.speeds = (0, 0, 0)
